@@ -20,9 +20,22 @@ Everything on the page comes from **`src/data/profile.ts`** — bio, stats, care
 Styling is in `src/index.css` (colors are the variables at the top). The 3D scene is `src/components/Scene.tsx`.
 
 ## Deploy to Cloudflare Pages
-1. Push this folder to a GitHub repo.
-2. Cloudflare Dashboard → Workers & Pages → Create → Pages → Connect to Git → pick the repo.
-3. Build command `npm run build`, output directory `dist`, environment variable `NODE_VERSION=22`.
-4. Deploy. Every push to `main` redeploys. Add a custom domain under the project's Custom domains tab.
+
+### Automatic (GitHub Actions) — every push to `main` deploys
+One-time setup:
+1. Cloudflare Dashboard → My Profile → API Tokens → Create Token → **Custom token** with permission *Account → Cloudflare Pages → Edit*. Copy the token.
+2. Copy your **Account ID** (Dashboard → Workers & Pages, right sidebar).
+3. GitHub repo → Settings → Secrets and variables → Actions → add `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
+4. Actions tab → *Deploy to Cloudflare Pages* → Run workflow (or just push).
+
+The workflow (`.github/workflows/deploy.yml`) builds, creates the `karthik-portfolio` Pages project on first run, and deploys. Your site goes live at `https://karthik-portfolio.pages.dev`.
+
+### Manual (from your computer)
+```bash
+npx wrangler login     # first time only
+npm run deploy
+```
+
+Add a custom domain under the Pages project's Custom domains tab.
 
 `public/_headers` sets long-lived caching for the hashed build assets.
