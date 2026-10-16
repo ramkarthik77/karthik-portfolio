@@ -1,8 +1,9 @@
 name: Deploy to Cloudflare Pages
 
+# Cloudflare's Git integration deploys every push automatically.
+# This workflow is a manual alternative (Actions tab → Run workflow);
+# it needs the CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID secrets.
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
