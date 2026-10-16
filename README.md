@@ -21,14 +21,12 @@ Styling is in `src/index.css` (colors are the variables at the top). The 3D scen
 
 ## Deploy to Cloudflare Pages
 
-### Automatic (GitHub Actions) — every push to `main` deploys
-One-time setup:
-1. Cloudflare Dashboard → My Profile → API Tokens → Create Token → **Custom token** with permission *Account → Cloudflare Pages → Edit*. Copy the token.
-2. Copy your **Account ID** (Dashboard → Workers & Pages, right sidebar).
-3. GitHub repo → Settings → Secrets and variables → Actions → add `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
-4. Actions tab → *Deploy to Cloudflare Pages* → Run workflow (or just push).
+### Automatic (recommended)
+Cloudflare Dashboard → Workers & Pages → Create → Pages → Connect to Git → `karthik-portfolio`.
+Framework preset **Vite**, build command `npm run build`, output directory `dist`. Every push to `main` then deploys. Node 22 is pinned via `.node-version`.
 
-The workflow (`.github/workflows/deploy.yml`) builds, creates the `karthik-portfolio` Pages project on first run, and deploys. Your site goes live at `https://karthik-portfolio.pages.dev`.
+### GitHub Actions (optional, manual trigger)
+Add repo secrets `CLOUDFLARE_API_TOKEN` (custom token with *Cloudflare Pages → Edit*) and `CLOUDFLARE_ACCOUNT_ID`, then Actions tab → *Deploy to Cloudflare Pages* → Run workflow.
 
 ### Manual (from your computer)
 ```bash
