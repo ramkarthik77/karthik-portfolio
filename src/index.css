@@ -148,3 +148,12 @@ h3 { font-family: var(--display); font-size: 1.3rem; letter-spacing: -0.01em; }
   padding: 28px var(--gutter); border-top: 1px solid var(--line);
   font-size: 0.85rem; color: var(--muted);
 }
+
+/* Intro video */
+.intro-video { padding-top: 0; }
+.video-frame {
+  max-width: 900px; border-radius: 20px; overflow: hidden;
+  border: 1px solid var(--line); background: var(--bg-2);
+}
+.video-frame video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
+@media (max-width: 719px) { .video-frame video { aspect-ratio: 9 / 16; max-height: 80svh; } }

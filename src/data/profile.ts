@@ -17,6 +17,11 @@ export const profile = {
   // Leave null to show the abstract 3D platform core instead.
   avatarUrl: null as string | null,
 
+  // Talking-avatar intro video. Put intro.mp4 (and optional intro-poster.jpg) in /public,
+  // then set introVideo: '/intro.mp4'. Section stays hidden while this is null.
+  introVideo: null as string | null,
+  introPoster: null as string | null,
+
   about: [
     'I’m a senior engineer and AEM architect with 14+ years building enterprise web platforms across healthcare, financial services and telecom — from Adobe’s own support team to leading a platform team today.',
     'My work sits where content, cloud and engineering discipline meet: migrating large estates to AEM as a Cloud Service, designing multi-site architectures, automating delivery pipelines, and bringing AI-assisted development into everyday engineering.',

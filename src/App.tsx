@@ -87,6 +87,21 @@ export default function App() {
           </div>
         </section>
 
+        {profile.introVideo && (
+          <section className="section intro-video">
+            <p className="section-label reveal">Meet Karthik</p>
+            <div className="video-frame reveal">
+              <video
+                src={profile.introVideo}
+                poster={profile.introPoster ?? undefined}
+                controls
+                playsInline
+                preload="metadata"
+              />
+            </div>
+          </section>
+        )}
+
         <section className="section">
           <p className="section-label reveal">02 — What I do</p>
           <div className="cards">
