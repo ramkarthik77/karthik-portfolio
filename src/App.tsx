@@ -3,6 +3,7 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
 import { profile } from './data/profile'
+import ProjectShowcase from './components/ProjectShowcase'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 const Scene = lazy(() => import('./components/Scene'))
@@ -133,19 +134,7 @@ export default function App() {
 
         <section id="work" className="section">
           <p className="section-label reveal">04 — Selected work</p>
-          <div className="work">
-            {profile.work.map((w, i) => (
-              <article key={w.title} className="work-item reveal">
-                <span className="num">{String(i + 1).padStart(2, '0')}</span>
-                <div>
-                  <p className="org">{w.org}</p>
-                  <h3>{w.title}</h3>
-                  <p>{w.body}</p>
-                  <div className="tags">{w.stack.map((t) => <span key={t}>{t}</span>)}</div>
-                </div>
-              </article>
-            ))}
-          </div>
+          <ProjectShowcase projects={profile.work} />
         </section>
 
         <section className="section">
@@ -183,3 +172,4 @@ export default function App() {
     </div>
   )
 }
+
