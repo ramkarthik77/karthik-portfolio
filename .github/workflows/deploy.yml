@@ -1,43 +1,106 @@
 name: Deploy to Cloudflare Pages
 
-# Cloudflare's Git integration deploys every push automatically.
-# This workflow is a manual alternative (Actions tab → Run workflow);
-# it needs the CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID secrets.
 on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: deploy
-  cancel-in-progress: true
-
-env:
-  PROJECT_NAME: karthik-portfolio
+  group: cloudflare-pages-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-
       - run: npm ci
+      - run: npm run lint
       - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: portfolio-dist
+          path: dist/
+          if-no-files-found: error
+          retention-days: 7
 
-      - name: Create Pages project (first run only)
-        run: npx wrangler pages project create "$PROJECT_NAME" --production-branch=main || echo "Project already exists"
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      PROJECT_NAME: ${{ vars.CLOUDFLARE_PAGES_PROJECT || 'karthik-guduri-portfolio' }}
+    steps:
+      - name: Check Cloudflare credentials
+        shell: bash
+        run: |
+          if [[ -z "$CLOUDFLARE_API_TOKEN" || -z "$CLOUDFLARE_ACCOUNT_ID" ]]; then
+            echo '::error::Add CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID in repository Settings > Secrets and variables > Actions. See docs/CLOUDFLARE-DEPLOY.md.'
+            exit 1
+          fi
+      - uses: actions/download-artifact@v4
+        with:
+          name: portfolio-dist
+          path: dist
+      - name: Find or create Pages project
+        id: project
+        shell: python
+        run: |
+          import json, os, re, urllib.request, urllib.error
+          project = os.environ['PROJECT_NAME']
+          account = os.environ['CLOUDFLARE_ACCOUNT_ID']
+          if not re.fullmatch(r'[a-z0-9][a-z0-9-]{0,57}', project):
+              raise SystemExit('Invalid CLOUDFLARE_PAGES_PROJECT name.')
+          if not re.fullmatch(r'[a-fA-F0-9]{32}', account):
+              raise SystemExit('CLOUDFLARE_ACCOUNT_ID must be a 32-character account ID.')
+          base = f'https://api.cloudflare.com/client/v4/accounts/{account}/pages/projects'
+          headers = {'Authorization': 'Bearer ' + os.environ['CLOUDFLARE_API_TOKEN'], 'Content-Type': 'application/json'}
+          def request(url, data=None):
+              req = urllib.request.Request(url, data=data, headers=headers)
+              with urllib.request.urlopen(req, timeout=30) as response:
+                  result = json.load(response)
+              if not result.get('success'):
+                  raise SystemExit('Cloudflare project request failed. Check account and Pages permissions.')
+              return result['result']
+          try:
+              result = request(base + '/' + project)
+          except urllib.error.HTTPError as error:
+              if error.code != 404:
+                  raise SystemExit(f'Cloudflare returned HTTP {error.code}; check token/account permissions.')
+              result = request(base, json.dumps({'name': project, 'production_branch': 'main'}).encode())
+          if result.get('production_branch') != 'main':
+              raise SystemExit('Existing Pages project uses a different production branch; choose another project name.')
+          hostname = result['subdomain']
+          if not re.fullmatch(r'[a-z0-9-]+\.pages\.dev', hostname):
+              raise SystemExit('Unexpected Pages hostname returned by Cloudflare.')
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write('url=https://' + hostname + '\n')
+      - name: Publish portfolio
+        id: publish
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: '4.151.1'
+          command: pages deploy dist --project-name=${{ env.PROJECT_NAME }} --branch=main --commit-hash=${{ github.sha }}
+      - name: Verify site and show URL
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-
-      - name: Deploy
-        run: npx wrangler pages deploy dist --project-name="$PROJECT_NAME" --branch=main
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          SITE_URL: ${{ steps.project.outputs.url }}
+        shell: bash
+        run: |
+          curl --fail --silent --show-error --retry 6 --retry-all-errors --retry-delay 5 "$SITE_URL" -o /tmp/portfolio.html
+          grep -q 'Karthik' /tmp/portfolio.html
+          printf '### Portfolio deployed\n\n[Open portfolio](%s)\n\nCommit: `%s`\n' "$SITE_URL" "$GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"
