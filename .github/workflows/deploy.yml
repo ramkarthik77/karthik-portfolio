@@ -26,6 +26,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run lint
+      - run: npm test
       - run: npm run build
       - uses: actions/upload-artifact@v4
         with:
@@ -104,3 +105,29 @@ jobs:
           curl --fail --silent --show-error --retry 6 --retry-all-errors --retry-delay 5 "$SITE_URL" -o /tmp/portfolio.html
           grep -q 'Karthik' /tmp/portfolio.html
           printf '### Portfolio deployed\n\n[Open portfolio](%s)\n\nCommit: `%s`\n' "$SITE_URL" "$GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"
+
+  preview:
+    needs: build
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PROJECT_NAME: ${{ vars.CLOUDFLARE_PAGES_PROJECT || 'karthik-guduri-portfolio' }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: portfolio-dist
+          path: dist
+      - name: Publish review preview
+        id: publish
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: '4.151.1'
+          command: pages deploy dist --project-name=${{ env.PROJECT_NAME }} --branch=pr-${{ github.event.pull_request.number }} --commit-hash=${{ github.event.pull_request.head.sha }}
+      - name: Show preview URL
+        env:
+          PREVIEW_URL: ${{ steps.publish.outputs.deployment-url }}
+        run: |
+          printf '### Motor Park preview\n\n[Try this version](%s)\n' "$PREVIEW_URL" >> "$GITHUB_STEP_SUMMARY"
