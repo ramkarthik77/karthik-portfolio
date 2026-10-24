@@ -1,2 +1,1039 @@
-.motorsport{--race-accent:#ff754c;position:relative;background:#10121a;color:#f3f2ed;min-height:100svh;font-family:Arial,Helvetica,sans-serif;isolation:isolate}.race-world{position:absolute;inset:0;z-index:-3}.race-vignette{position:absolute;inset:0;z-index:-2;background:linear-gradient(90deg,rgba(8,11,17,.84),transparent 58%),linear-gradient(0deg,#080c13 1%,transparent 40%,rgba(8,11,17,.35));pointer-events:none}.race-nav{padding:28px 4%;display:flex;align-items:center;justify-content:space-between;gap:20px}.race-brand{display:flex;align-items:center;gap:12px;font-size:30px;font-weight:900;text-decoration:none;color:inherit}.race-brand span{color:var(--race-accent)}.race-brand small{font-size:9px;font-weight:500;letter-spacing:2px;max-width:105px;line-height:1.5}.motorsport button,.back-to-track{font:inherit;color:inherit;cursor:pointer;border:1px solid #ffffff30;background:#0b1119b0;padding:12px 18px;border-radius:3px}.motorsport button:hover{border-color:var(--race-accent);background:#202731}.motorsport button:focus-visible,.motorsport a:focus-visible{outline:2px solid #ffaf81;outline-offset:5px}.race-nav button{font-size:12px}.race-overlay{display:flex;justify-content:space-between;align-items:flex-start;gap:28px;padding:65px 4% 120px;min-height:65svh}.race-intro{pointer-events:none}.race-kicker{font-size:10px;letter-spacing:2px;color:#d6d3d0;display:flex;align-items:center;gap:9px}.race-kicker span{width:6px;height:6px;background:var(--race-accent);border-radius:50%;box-shadow:0 0 15px var(--race-accent)}.race-intro h1{font-size:clamp(54px,7.5vw,115px);font-weight:900;line-height:.94;letter-spacing:-5px;margin:28px 0}.race-intro h1 em{font-style:normal;color:var(--race-accent)}.race-subtitle{font-size:15px;line-height:1.8;color:#d1d4d8}.race-config{width:285px;margin-top:15px;background:#0a1019b8;backdrop-filter:blur(16px);border:1px solid #ffffff1f;padding:22px}.race-label{font-size:9px;letter-spacing:2px;color:#b9c1cb;margin:0 0 14px}.race-segment{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:25px}.race-segment button{padding:15px 8px;text-align:left;font-size:12px}.race-segment small{display:block;font-size:7px;letter-spacing:1px;margin-top:9px;color:#aeb9c6}.motorsport button[aria-pressed=true]{border-color:var(--race-accent);background:#ff754c18}.race-moods{display:flex;gap:5px}.race-moods button{text-transform:capitalize;font-size:10px;padding:9px 8px;flex:1;white-space:nowrap}.race-actions{display:grid;gap:8px;margin-top:27px}.race-actions button{font-size:12px;text-align:left}.race-actions .race-primary{background:var(--race-accent);color:#10131a;border-color:var(--race-accent);font-weight:700}.race-return{margin-top:10px;font-size:11px!important;width:100%}.motion-option{display:flex;align-items:center;gap:7px;font-size:10px;color:#bfc4ce;margin-top:17px}.motion-option input{accent-color:var(--race-accent)}.race-stops{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;padding:0 4%}.race-stops button{display:flex;gap:12px;align-items:center;text-align:left;border:0;border-top:1px solid #a4b3c044;border-radius:0;padding:22px 12px;font-size:11px;min-height:70px;background:#0a1019bd}.race-stops span{color:var(--race-accent);font-size:9px}.race-stops b{margin-left:auto;color:#9dabbc}.race-footer{padding:25px 4%;display:flex;justify-content:space-between;gap:15px;color:#81909e;font-size:8px;letter-spacing:1.5px}.race-dialog{background:#111923;color:#f3f2ed;border:1px solid #566371;border-top:3px solid var(--race-accent);padding:40px;width:min(680px,90vw);max-height:80svh;border-radius:8px}.race-dialog::backdrop{background:#020611bb;backdrop-filter:blur(8px)}.race-dialog h2{font-size:32px;margin:25px 0}.race-dialog p,.race-dialog li{font-size:15px;line-height:1.8;color:#c0ccd8}.race-dialog article{border-top:1px solid #ffffff20;padding:20px 0}.race-dialog h3{margin:10px 0;color:#fff}.race-dialog a{color:#ff9b77;overflow-wrap:anywhere}.dialog-close{float:right}.scene-fallback{padding:30vh 35%;color:#fff;line-height:1.6}.touch-drive{display:flex;gap:8px;justify-content:center;padding:0 15px 20px}.touch-drive button{touch-action:none;user-select:none;font-size:12px}.back-to-track{position:fixed;right:20px;bottom:20px;z-index:100;color:#fff;background:#151b23}.race-skip{position:absolute;top:-100px;left:20px;z-index:10;background:#fff;color:#000;padding:15px}.race-skip:focus{top:10px}.mood-night{--race-accent:#a4a0ff}.mood-day{--race-accent:#ffc68c}@media(max-width:760px){.race-nav{padding:20px 5%}.race-brand small{font-size:7px}.race-overlay{padding:30px 5% 35px;display:block}.race-intro h1{font-size:62px;letter-spacing:-3px}.race-kicker{font-size:8px}.race-config{margin-top:230px;width:100%;padding:18px}.race-world{height:850px}.race-vignette{background:linear-gradient(0deg,#080c13 5%,transparent 65%,#080c1377)}.race-segment{margin-bottom:18px}.race-actions{grid-template-columns:1fr 1fr;margin-top:18px}.race-stops{grid-template-columns:1fr 1fr;padding:0 5%}.race-stops button:last-child{grid-column:1/-1}.race-footer{padding:20px 5%;line-height:1.7}.race-footer span:last-child{display:none}.race-dialog{padding:25px}.scene-fallback{padding:350px 20px 0}.touch-drive{flex-wrap:wrap}}@media(prefers-reduced-motion:reduce){.motorsport *{scroll-behavior:auto}}
-.motorsport h1,.motorsport h2,.motorsport h3{font-family:Arial,Helvetica,sans-serif}.scene-fallback{position:absolute;top:62%;left:38%;padding:18px;max-width:370px;background:#101926db;border-left:2px solid #ff754c;font-size:12px;z-index:1}@media(max-width:760px){.scene-fallback{top:420px;left:5%;right:5%;max-width:none}}
+.motor-park {
+  --ink: #293a3d;
+  --paper: #f9f2df;
+  --orange: #ec7949;
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #baa994;
+  color: var(--ink);
+  isolation: isolate;
+  font-family: Inter, Arial, sans-serif;
+}
+.motor-park * {
+  box-sizing: border-box;
+}
+.motor-park button,
+.motor-park a {
+  -webkit-tap-highlight-color: transparent;
+}
+.motor-park button {
+  font: inherit;
+  cursor: pointer;
+  color: inherit;
+}
+.motor-park button:focus-visible,
+.motor-park a:focus-visible,
+.back-to-track:focus-visible {
+  outline: 3px solid #ba4d21;
+  outline-offset: 5px;
+}
+.motor-park h1,
+.motor-park h2,
+.motor-park h3 {
+  font-family: Inter, Arial, sans-serif;
+  letter-spacing: -0.04em;
+  color: inherit;
+}
+.world-stage {
+  position: absolute;
+  inset: 0;
+  z-index: -3;
+  outline: none;
+}
+.world-stage canvas {
+  display: block;
+  touch-action: none;
+}
+.park-edge {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    #f7ecd13b,
+    transparent 24%,
+    transparent 72%,
+    #13252b1a
+  );
+}
+.park-header {
+  position: absolute;
+  top: 28px;
+  left: 32px;
+  right: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+.park-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  padding: 0;
+  text-shadow: 0 1px 10px #e8ddbe66;
+}
+.park-brand > b {
+  font-size: 25px;
+  letter-spacing: -2px;
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 12px;
+  padding: 14px 10px;
+}
+.park-brand > b span {
+  color: #f5bb69;
+  font-size: 16px;
+  margin-left: 2px;
+}
+.park-brand > span {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+.park-brand small {
+  display: block;
+  margin-top: 7px;
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: 1.4px;
+}
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.header-actions > button,
+.ride-switch {
+  border: 1px solid #30404420;
+  background: #fff8e8df;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px #243f4710;
+  backdrop-filter: blur(14px);
+}
+.header-actions > button {
+  height: 47px;
+  padding: 0 17px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.ride-switch {
+  display: flex;
+  padding: 4px;
+  gap: 3px;
+}
+.ride-switch button {
+  border: 0;
+  background: transparent;
+  border-radius: 8px;
+  width: 52px;
+  height: 37px;
+  padding: 8px;
+  color: #62716d;
+}
+.ride-switch button[aria-pressed="true"] {
+  background: #34494b;
+  color: #f9edcb;
+}
+.ride-switch svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.mood-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-transform: capitalize;
+  min-width: 110px;
+}
+.mood-button span:first-child {
+  font-size: 23px;
+  line-height: 1;
+}
+.header-actions .settings-button {
+  font-size: 22px;
+  padding: 0 14px;
+}
+.park-status {
+  position: absolute;
+  top: 108px;
+  left: 33px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 1.3px;
+  padding: 8px 10px;
+  background: #f8efddbd;
+  border-radius: 5px;
+}
+.live-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #6a8973;
+}
+.exploration {
+  position: absolute;
+  right: 34px;
+  top: 105px;
+  text-align: right;
+  font-size: 10px;
+  background: #f9f0dedb;
+  padding: 12px 14px;
+  border-radius: 9px;
+}
+.exploration > span {
+  font-weight: 800;
+}
+.exploration > div {
+  display: flex;
+  gap: 5px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+.exploration i {
+  width: 20px;
+  height: 3px;
+  border-radius: 2px;
+  background: #b5b8a7;
+}
+.exploration i.found {
+  background: #ec7949;
+}
+.welcome-card {
+  position: absolute;
+  left: 42px;
+  bottom: 86px;
+  max-width: 550px;
+  padding: 31px 34px;
+  background: #fcf6e6ef;
+  border: 1px solid #fff7e8;
+  border-radius: 20px;
+  box-shadow: 0 12px 45px #364c4a17;
+  backdrop-filter: blur(12px);
+}
+.park-eyebrow {
+  font-size: 8px;
+  letter-spacing: 1.3px;
+  font-weight: 750;
+  color: #697a71;
+  margin: 0 0 17px;
+  line-height: 1.6;
+}
+.welcome-card h1 {
+  font-size: clamp(25px, 3.1vw, 43px);
+  line-height: 1.12;
+  font-weight: 750;
+  margin: 0 0 17px;
+}
+.welcome-card h1 > span {
+  color: var(--orange);
+}
+.welcome-card > p:not(.park-eyebrow) {
+  font-size: 12px;
+  line-height: 1.9;
+  color: #64716c;
+  margin: 0;
+}
+.welcome-actions {
+  display: flex;
+  gap: 12px;
+  margin: 25px 0 23px;
+}
+.welcome-actions button {
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  padding: 14px 17px;
+  font-size: 11px;
+  font-weight: 650;
+}
+.welcome-actions .park-primary {
+  background: #344a4b;
+  color: #fff2d6;
+  min-width: 150px;
+  display: flex;
+  justify-content: space-between;
+  gap: 35px;
+}
+.park-primary:hover {
+  background: #203a3e !important;
+}
+.welcome-actions button:last-child:hover {
+  background: #e9e3d1;
+}
+.welcome-controls {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 8px;
+  color: #8b9384;
+  letter-spacing: 0.2px;
+}
+.motor-park kbd {
+  font-family: inherit;
+  font-size: 9px;
+  border: 1px solid #6d7d6e44;
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  padding: 3px 6px;
+  color: #63746c;
+}
+.touch-welcome {
+  display: none;
+}
+.park-footer {
+  position: absolute;
+  bottom: 20px;
+  left: 34px;
+  right: 34px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 7px;
+  letter-spacing: 1.3px;
+  font-weight: 600;
+  pointer-events: none;
+}
+.minimap-button {
+  position: absolute;
+  left: 32px;
+  bottom: 65px;
+  width: 190px;
+  padding: 7px;
+  border: 1px solid #fbf5e4;
+  background: #f7f0dfed;
+  border-radius: 13px;
+  box-shadow: 0 5px 20px #263a4620;
+}
+.park-map {
+  width: 100%;
+  display: block;
+  border-radius: 8px;
+}
+.minimap-button > span {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 5px 2px;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+.minimap-button kbd {
+  font-size: 8px;
+}
+.drive-prompt {
+  position: absolute;
+  left: 50%;
+  bottom: 116px;
+  transform: translateX(-50%);
+  min-width: 300px;
+  max-width: 400px;
+}
+.drive-prompt > button {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 19px;
+  border-radius: 12px;
+  background: #fbf4e2f5;
+  border: 1px solid #fff2d7;
+  box-shadow: 0 7px 24px #283f4420;
+  text-align: left;
+}
+.prompt-index {
+  font-size: 21px;
+  color: #cb7249;
+  font-weight: 700;
+}
+.drive-prompt button > span:nth-child(2) {
+  font-size: 13px;
+  font-weight: 650;
+  flex: 1;
+}
+.drive-prompt small {
+  display: block;
+  font-size: 7px;
+  letter-spacing: 1px;
+  margin-bottom: 5px;
+  color: #7d8878;
+}
+.drive-prompt > p {
+  font-size: 10px;
+  text-align: center;
+  background: #fff4d9cc;
+  padding: 10px 15px;
+  border-radius: 20px;
+  color: #4e625e;
+}
+.drive-toolbar {
+  position: absolute;
+  left: 50%;
+  bottom: 68px;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 5px;
+  background: #f9f1dfeb;
+  border-radius: 10px;
+  padding: 5px;
+}
+.drive-toolbar button {
+  white-space: nowrap;
+  border: 0;
+  background: transparent;
+  border-radius: 6px;
+  padding: 9px 11px;
+  font-size: 9px;
+  font-weight: 600;
+}
+.drive-toolbar button:hover {
+  background: #e7dfca;
+}
+.desktop-drive-help {
+  position: absolute;
+  bottom: 42px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 8px;
+  white-space: nowrap;
+}
+.desktop-drive-help kbd {
+  font-size: 7px;
+  background: #fff6e2a8;
+  padding: 2px 4px;
+}
+.speedometer {
+  position: absolute;
+  bottom: 70px;
+  right: 34px;
+  width: 160px;
+  text-align: right;
+  padding: 16px 18px;
+  background: #f8f0dbd9;
+  border-radius: 15px;
+  border: 1px solid #fff6e277;
+}
+.speedometer strong {
+  font-size: 53px;
+  font-weight: 500;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -4px;
+}
+.speedometer strong small {
+  font-size: 8px;
+  letter-spacing: 1px;
+  margin-left: 9px;
+}
+.speedometer > div {
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin: 13px 0 8px;
+}
+.speedometer > span {
+  display: block;
+  font-size: 8px;
+  color: #607269;
+  margin-top: 4px;
+}
+.touch-controls {
+  position: absolute;
+  bottom: 120px;
+  left: 20px;
+  right: 20px;
+  display: none;
+  grid-template-columns: 52px 52px 1fr 55px 55px;
+  gap: 8px;
+  pointer-events: none;
+}
+.touch-controls button {
+  pointer-events: auto;
+  touch-action: none;
+  user-select: none;
+  border: 1px solid #fff1d0;
+  background: #fbf4deec;
+  border-radius: 13px;
+  height: 52px;
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: 0 2px 10px #0001;
+}
+.touch-controls button:active {
+  background: #e8b780;
+}
+.touch-left,
+.touch-right {
+  grid-row: 2;
+  font-size: 24px !important;
+}
+.touch-reverse {
+  grid-column: 4;
+  grid-row: 1;
+  font-size: 8px !important;
+}
+.touch-brake {
+  grid-column: 4;
+  grid-row: 2;
+  font-size: 9px !important;
+}
+.touch-boost {
+  grid-column: 5;
+  grid-row: 1;
+  font-size: 9px !important;
+}
+.touch-go {
+  grid-column: 5;
+  grid-row: 2;
+}
+.park-panel {
+  color: var(--ink);
+  background: #fcf5e4;
+  border: 1px solid #fff3db;
+  border-radius: 21px;
+  padding: 38px 38px 32px;
+  width: min(620px, calc(100vw - 30px));
+  max-height: 85svh;
+  box-shadow: 0 30px 90px #192a4050;
+}
+.park-panel::backdrop {
+  background: #152c3d6b;
+  backdrop-filter: blur(6px);
+}
+.park-panel .panel-close {
+  position: sticky;
+  float: right;
+  top: 0;
+  margin: -16px -16px 10px 10px;
+  width: 36px;
+  height: 36px;
+  font-size: 25px;
+  border: 1px solid #b2b4a84d;
+  border-radius: 50%;
+  background: #eee7d8;
+  color: #4c5b56;
+  z-index: 1;
+}
+.park-panel h2 {
+  font-size: 34px;
+  margin: 0 0 23px;
+  line-height: 1.1;
+  font-weight: 750;
+}
+.park-panel h3 {
+  font-size: 20px;
+  margin: 13px 0;
+}
+.park-panel p,
+.park-panel li {
+  font-size: 13px;
+  line-height: 1.85;
+  color: #69756a;
+}
+.park-panel .panel-lead {
+  font-size: 23px;
+  line-height: 1.4;
+  color: #3b504b;
+  letter-spacing: -0.5px;
+}
+.park-panel .park-eyebrow {
+  font-size: 8px;
+  margin-bottom: 16px;
+}
+.park-panel article {
+  border-top: 1px solid #75877030;
+  padding: 24px 0 18px;
+}
+.park-panel article small {
+  font-size: 9px;
+  color: #89917d;
+}
+.park-panel a {
+  color: #8a4f32;
+  text-decoration: none;
+  border-bottom: 1px solid #bf947c;
+  overflow-wrap: anywhere;
+}
+.profile-numbers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 25px;
+  margin: 30px 0;
+}
+.profile-numbers > div {
+  flex: 1;
+  min-width: 110px;
+}
+.profile-numbers strong {
+  display: block;
+  font-size: 45px;
+  color: #bb6943;
+  letter-spacing: -2px;
+}
+.profile-numbers span {
+  font-size: 11px;
+  line-height: 1.6;
+  display: block;
+  color: #7d8977;
+}
+.project-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.project-tags span {
+  font-size: 9px;
+  border: 1px solid #7c8a762d;
+  background: #f1ebd9;
+  border-radius: 5px;
+  padding: 6px 9px;
+}
+.park-panel .panel-cta {
+  display: inline-block;
+  border: 0;
+  border-radius: 8px;
+  background: #344a4b;
+  color: #fff1d0;
+  padding: 14px 20px;
+  font-size: 12px;
+  margin: 15px 0;
+  text-decoration: none;
+}
+.large-map {
+  margin: 15px 0;
+}
+.map-destinations {
+  margin: 14px 0;
+}
+.map-destinations button {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid #7e8c7330;
+  background: transparent;
+  padding: 14px 3px;
+  font-size: 12px;
+  text-align: left;
+}
+.map-destinations span:first-child {
+  font-size: 10px;
+  color: #bb6943;
+}
+.map-destinations strong {
+  flex: 1;
+  font-weight: 550;
+}
+.map-destinations button:hover {
+  background: #f0e7d3;
+}
+.park-panel fieldset {
+  border: 0;
+  padding: 0;
+  margin: 25px 0;
+}
+.park-panel legend {
+  font-size: 11px;
+  margin-bottom: 10px;
+  color: #78846f;
+}
+.park-panel fieldset button,
+.park-panel > button:not(.panel-close):not(.panel-cta) {
+  border: 1px solid #b4b9a3;
+  border-radius: 7px;
+  padding: 10px 15px;
+  background: transparent;
+  margin-right: 7px;
+  font-size: 11px;
+  text-transform: capitalize;
+}
+.park-panel button[aria-pressed="true"] {
+  background: #344a4b !important;
+  color: #fff1d0;
+}
+.setting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 17px 0;
+  border-top: 1px solid #89977f30;
+  font-size: 12px;
+}
+.setting-row small {
+  display: block;
+  font-size: 9px;
+  color: #7e8a77;
+  margin-top: 6px;
+}
+.setting-row input {
+  accent-color: #406452;
+  width: 17px;
+  height: 17px;
+}
+.park-loading {
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  background: #fff5e1;
+  padding: 18px 24px;
+  border-radius: 12px;
+}
+.park-loading span {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #db7c4b;
+  margin-right: 10px;
+}
+.flat-world {
+  position: absolute;
+  inset: 0;
+  background: #b9c7bc;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.flat-world .park-map {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0.9;
+  border-radius: 0;
+  margin: 0;
+}
+.theme-night .park-brand {
+  color: #f2e5d1;
+}
+.theme-night .park-footer,
+.theme-night .desktop-drive-help {
+  color: #e6e8d8;
+}
+.park-skip {
+  position: absolute;
+  top: -100px;
+  left: 30px;
+  background: #fff4d9;
+  color: #2d484a;
+  padding: 15px;
+  z-index: 10;
+}
+.park-skip:focus {
+  top: 15px;
+}
+.back-to-track {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 100;
+  color: #fff4dd;
+  background: #344b4e;
+  border: 0;
+  border-radius: 9px;
+  padding: 15px 20px;
+  cursor: pointer;
+}
+.motor-park .world-stage:focus {
+  outline: none;
+}
+@media (hover: none), (pointer: coarse) {
+  .touch-controls {
+    display: grid;
+  }
+  .desktop-drive-help {
+    display: none;
+  }
+  .touch-welcome {
+    display: inline;
+  }
+  .welcome-controls > kbd,
+  .welcome-controls > span:not(.touch-welcome) {
+    display: none;
+  }
+  .drive-prompt {
+    bottom: 245px;
+  }
+  .minimap-button {
+    bottom: 65px;
+    width: 130px;
+  }
+  .speedometer {
+    bottom: 60px;
+    width: 125px;
+  }
+  .speedometer strong {
+    font-size: 36px;
+  }
+  .drive-toolbar {
+    bottom: 33px;
+  }
+  .park-footer {
+    bottom: 12px;
+  }
+}
+@media (max-width: 760px) {
+  .park-header {
+    top: 17px;
+    left: 16px;
+    right: 16px;
+    gap: 7px;
+  }
+  .park-brand > b {
+    font-size: 20px;
+    padding: 12px 8px;
+  }
+  .park-brand {
+    gap: 8px;
+  }
+  .park-brand > span {
+    font-size: 8px;
+    letter-spacing: 0.6px;
+  }
+  .park-brand small {
+    font-size: 5px;
+    letter-spacing: 0.7px;
+    margin-top: 5px;
+  }
+  .header-actions {
+    gap: 5px;
+  }
+  .ride-switch button {
+    width: 34px;
+    height: 30px;
+    padding: 5px;
+  }
+  .header-actions > button {
+    height: 40px;
+    padding: 0 10px;
+  }
+  .header-actions .quick-profile {
+    display: none;
+  }
+  .mood-button {
+    min-width: 0;
+  }
+  .mood-button span:last-child {
+    display: none;
+  }
+  .header-actions .settings-button {
+    font-size: 18px;
+    padding: 0 10px;
+  }
+  .park-status {
+    left: 16px;
+    top: 78px;
+    font-size: 6px;
+    letter-spacing: 0.6px;
+    max-width: 230px;
+  }
+  .exploration {
+    right: 16px;
+    top: 78px;
+    font-size: 8px;
+    padding: 9px;
+  }
+  .exploration > div {
+    gap: 3px;
+  }
+  .exploration i {
+    width: 12px;
+  }
+  .welcome-card {
+    left: 16px;
+    right: 16px;
+    bottom: 45px;
+    padding: 23px;
+    max-width: 430px;
+    border-radius: 16px;
+  }
+  .welcome-card h1 {
+    font-size: 29px;
+  }
+  .welcome-card > p:not(.park-eyebrow) {
+    font-size: 11px;
+  }
+  .welcome-card .park-eyebrow {
+    font-size: 6px;
+    letter-spacing: 0.7px;
+  }
+  .welcome-actions {
+    gap: 5px;
+    margin: 19px 0 15px;
+  }
+  .welcome-actions button {
+    font-size: 10px;
+    padding: 13px 11px;
+  }
+  .welcome-actions .park-primary {
+    min-width: 120px;
+    gap: 20px;
+  }
+  .desktop-break {
+    display: none;
+  }
+  .park-footer {
+    left: 17px;
+    right: 17px;
+    font-size: 5px;
+    letter-spacing: 0.6px;
+    bottom: 16px;
+  }
+  .park-footer span:last-child {
+    display: none;
+  }
+  .minimap-button {
+    left: 15px;
+    width: 115px;
+    bottom: 63px;
+    padding: 5px;
+  }
+  .minimap-button > span {
+    font-size: 6px;
+    padding: 5px 2px 0;
+  }
+  .minimap-button kbd {
+    display: none;
+  }
+  .speedometer {
+    right: 15px;
+    bottom: 63px;
+    width: 117px;
+    padding: 12px;
+  }
+  .speedometer strong {
+    font-size: 35px;
+    letter-spacing: -2px;
+  }
+  .speedometer strong small {
+    font-size: 6px;
+  }
+  .speedometer > div,
+  .speedometer > span {
+    font-size: 6px;
+  }
+  .drive-toolbar {
+    bottom: 24px;
+    gap: 0;
+    padding: 3px;
+    max-width: 95vw;
+  }
+  .drive-toolbar button {
+    font-size: 7px;
+    padding: 9px 8px;
+  }
+  .drive-prompt {
+    bottom: 250px;
+    min-width: 0;
+    width: calc(100% - 40px);
+    max-width: 340px;
+  }
+  .drive-prompt > button {
+    padding: 11px 14px;
+  }
+  .drive-prompt button > span:nth-child(2) {
+    font-size: 12px;
+  }
+  .drive-prompt > p {
+    font-size: 9px;
+  }
+  .touch-controls {
+    display: grid;
+    bottom: 130px;
+    left: 15px;
+    right: 15px;
+    grid-template-columns: 45px 45px 1fr 46px 46px;
+    gap: 6px;
+  }
+  .touch-controls button {
+    height: 45px;
+  }
+  .desktop-drive-help {
+    display: none;
+  }
+  .park-panel {
+    padding: 30px 25px 22px;
+    max-height: 88svh;
+  }
+  .park-panel h2 {
+    font-size: 29px;
+  }
+  .park-panel .panel-lead {
+    font-size: 21px;
+  }
+  .park-panel p,
+  .park-panel li {
+    font-size: 12px;
+  }
+  .flat-world .park-map {
+    height: 75%;
+    align-self: flex-start;
+    margin-top: 95px;
+  }
+  .theme-night .flat-world {
+    background: #1e3344;
+  }
+}
+@media (max-height: 550px) {
+  .welcome-card {
+    bottom: 35px;
+    max-width: 430px;
+    padding: 18px 24px;
+  }
+  .welcome-card h1 {
+    font-size: 27px;
+  }
+  .welcome-card > p:not(.park-eyebrow) {
+    display: none;
+  }
+  .welcome-actions {
+    margin: 15px 0 10px;
+  }
+  .park-status {
+    display: none;
+  }
+  .minimap-button {
+    width: 125px;
+    bottom: 45px;
+  }
+  .speedometer {
+    bottom: 45px;
+  }
+  .drive-prompt {
+    bottom: 95px;
+  }
+  .drive-toolbar {
+    bottom: 42px;
+  }
+  .touch-controls {
+    bottom: 70px;
+  }
+  .park-footer {
+    bottom: 10px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .motor-park * {
+    scroll-behavior: auto;
+    transition: none !important;
+  }
+}
