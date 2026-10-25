@@ -15,6 +15,7 @@ import ParkMap from "./world/ParkMap";
 import DestinationContent from "./world/DestinationContent";
 import "./motorsport.css";
 import "./experience-enhancements.css";
+import "./storytelling.css";
 const Profile = lazy(() => import("./Profile"));
 const Circuit = lazy(() => import("./components/Circuit"));
 class SceneBoundary extends Component<
@@ -352,15 +353,15 @@ export default function App() {
       {intro ? (
         <section className="welcome-card">
           <p className="park-eyebrow">
-            ARCHITECT BY PROFESSION. EXPLORER BY NATURE.
+            ARCHITECT BY PROFESSION. BUILDER BY INSTINCT.
           </p>
           <h1>
-            Good things happen
+            Engineering the future
             <br />
-            off the beaten track<span>.</span>
+            beyond the finish line<span>.</span>
           </h1>
           <p>
-            I’m Karthik. Take a car or bike through my world of
+            I’m Karthik Guduri — AEM Cloud Architect. Ride through my world of
             <br className="desktop-break" /> cloud platforms, creative ideas,
             and AI.
           </p>
@@ -369,7 +370,7 @@ export default function App() {
               Let’s drive <span>↗</span>
             </button>
             <button onClick={() => start(true)}>Show me around →</button>
-            <button onClick={() => { setIntro(false); setMenu("map"); }}>Explore destinations without driving ↗</button>
+            <button onClick={() => { setIntro(false); setMenu("map"); }}>Explore work without driving ↗</button>
           </div>
           <div className="welcome-controls">
             <kbd>W A S D</kbd>
