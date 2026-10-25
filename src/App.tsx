@@ -14,6 +14,7 @@ import { controlValue, useDriving, useKeys } from "./world/useDriving";
 import ParkMap from "./world/ParkMap";
 import DestinationContent from "./world/DestinationContent";
 import "./motorsport.css";
+import "./experience-enhancements.css";
 const Profile = lazy(() => import("./Profile"));
 const Circuit = lazy(() => import("./components/Circuit"));
 class SceneBoundary extends Component<
@@ -197,6 +198,7 @@ export default function App() {
     [],
   );
   const unavailable = useCallback(() => setFlat(true), []);
+  const [showGuide, setShowGuide] = useState(false);
   const speed = paused
     ? 0
     : Math.round(Math.hypot(game.snapshot.vx, game.snapshot.vz) * 3.6);
@@ -307,6 +309,14 @@ export default function App() {
             <span>{mood === "night" ? "Neon night" : mood}</span>
           </button>
           <button
+            onClick={() => setShowGuide((value) => !value)}
+            className="settings-button"
+            aria-label="Show driving controls"
+            aria-expanded={showGuide}
+          >
+            ?
+          </button>
+          <button
             onClick={() => setMenu("settings")}
             className="settings-button"
             aria-label="Open settings"
@@ -318,6 +328,7 @@ export default function App() {
           </button>
         </div>
       </header>
+      {showGuide && <aside className="driving-guide" aria-label="Driving controls"><strong>Explore your way</strong><p>Use WASD or arrow keys to drive, E to explore a nearby destination, and M for the map. On touch devices use the on-screen controls. You can always select Quick profile for a standard accessible view.</p><button onClick={() => setShowGuide(false)}>Close guide</button></aside>}
       <div className="park-status">
         <span className="live-dot" />
         {flat
@@ -358,6 +369,7 @@ export default function App() {
               Let’s drive <span>↗</span>
             </button>
             <button onClick={() => start(true)}>Show me around →</button>
+            <button onClick={() => { setIntro(false); setMenu("map"); }}>Explore destinations without driving ↗</button>
           </div>
           <div className="welcome-controls">
             <kbd>W A S D</kbd>
