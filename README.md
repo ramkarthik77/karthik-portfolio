@@ -17,7 +17,24 @@ Everything on the page comes from **`src/data/profile.ts`** — bio, stats, care
 - **Résumé:** put `resume.pdf` in `public/` and set `resumeUrl: '/resume.pdf'`
 - **3D avatar:** put a `.glb` (under ~5 MB) at `public/models/avatar.glb` and set `avatarUrl: '/models/avatar.glb'`. Leave it `null` to keep the abstract "platform core" (a core with 100+ orbiting site nodes).
 
-Styling is in `src/index.css` (colors are the variables at the top). The 3D scene is `src/components/Scene.tsx`.
+- **AI products:** edit `products` — they appear in the Innovation lab and the Quick profile
+- **Site address:** set `siteUrl` if you move to a custom domain; canonical links, social previews, `robots.txt` and `sitemap.xml` are generated from it at build time
+- **Social preview image:** `public/og-image.jpg` (1200×630)
+
+The Quick profile is served at `/profile`, so it can be linked directly.
+
+## Graphics quality
+The Motor Park (`src/components/Circuit.tsx`) renders in three tiers:
+
+| Tier | Who gets it | What's on |
+|---|---|---|
+| high | desktops | up to 2× pixel density (4K on 4K displays), 4096 soft shadows, ambient occlusion, bloom, depth of field on the welcome shot, colour grade, vignette |
+| medium | phones / touch devices | up to 1.5× density, 2048 shadows, bloom, grade, vignette |
+| low | Performance mode, or devices that can't hold frame rate | no post-processing, no shadows |
+
+Tiers step down automatically if the frame rate drops. Add `?quality=high`, `?quality=medium` or `?quality=low` to the URL to pin one. Post-processing lives in `src/world/Effects.tsx` and loads as a separate chunk; per-mood lighting and sky colours are in `src/world/looks.ts`.
+
+Styling is in `src/index.css` (Quick profile) and `src/motorsport.css` (Motor Park).
 
 ## Deploy to Cloudflare Pages
 
