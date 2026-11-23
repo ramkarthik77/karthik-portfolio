@@ -34,6 +34,13 @@ The Motor Park (`src/components/Circuit.tsx`) renders in three tiers:
 
 Tiers step down automatically if the frame rate drops. Add `?quality=high`, `?quality=medium` or `?quality=low` to the URL to pin one. Post-processing lives in `src/world/Effects.tsx` and loads as a separate chunk; per-mood lighting and sky colours are in `src/world/looks.ts`.
 
+## Street racing
+- **Car:** an original hypercar built in code (`src/world/StreetCar.tsx`): fender pods, carbon aero, LED lights, livery, underglow and nitro flames. No real car brands or game assets.
+- **Garage:** paint, underglow and livery are chosen in Settings and remembered per visitor. Presets live in `src/world/garage.ts`.
+- **Nitro:** Shift (or the Nitro button) boosts while the tank lasts; it refills over time and faster while drifting.
+- **Drifting:** hold Space or B while steering for a handbrake slide, with tyre smoke and skid marks (`src/world/DriftFX.tsx`).
+- **Neon Night:** wet asphalt, neon roof trims and neon reflections.
+
 Styling is in `src/index.css` (Quick profile) and `src/motorsport.css` (Motor Park).
 
 ## Deploy to Cloudflare Pages

@@ -12,6 +12,8 @@ import { destinations } from "./world/config";
 import type { Mood, Vehicle, DriveMode, CameraMode } from "./world/config";
 import { controlValue, useDriving, useKeys } from "./world/useDriving";
 import ParkMap from "./world/ParkMap";
+import { glows, loadGarage, paints, saveGarage } from "./world/garage";
+import type { Garage, Glow, Paint } from "./world/garage";
 import DestinationContent from "./world/DestinationContent";
 import "./motorsport.css";
 import "./experience-enhancements.css";
@@ -75,6 +77,8 @@ export default function App() {
   const [mood, setMood] = useState<Mood>(() =>
     saved("kg.mood.v1", ["sunset", "night", "day"], "sunset"),
   );
+  const [garage, setGarage] = useState<Garage>(loadGarage);
+  useEffect(() => saveGarage(garage), [garage]);
   const [mode, setMode] = useState<DriveMode>("free"),
     [cameraMode, setCameraMode] = useState<CameraMode>("orbit"),
     [low, setLow] = useState(false);
@@ -219,6 +223,19 @@ export default function App() {
   const speed = paused
     ? 0
     : Math.round(Math.hypot(game.snapshot.vx, game.snapshot.vz) * 3.6);
+  // Racing HUD: a simulated gearbox so the tach climbs and drops through the gears.
+  const along =
+    game.snapshot.vx * Math.sin(game.snapshot.heading) +
+    game.snapshot.vz * Math.cos(game.snapshot.heading);
+  const bands = [0, 28, 48, 66, 84, 100, 130];
+  const gearIndex = Math.max(1, bands.findIndex((b) => speed < b));
+  const gear = along < -0.5 ? "R" : speed < 2 ? "N" : String(Math.min(gearIndex, 6));
+  const lo = bands[gearIndex - 1] ?? 0,
+    hi = bands[gearIndex] ?? 130;
+  const rpm =
+    speed < 2 ? 0.12 : Math.min(1, 0.28 + (0.72 * (speed - lo)) / Math.max(1, hi - lo));
+  const nitro = game.snapshot.nitro,
+    boosting = !paused && game.snapshot.boosting;
   if (classic)
     return (
       <>
@@ -232,6 +249,10 @@ export default function App() {
     );
   return (
     <div className={`motor-park theme-${mood}`}>
+      <div
+        className={"speed-lines" + (boosting && !reduced && !intro ? " on" : "")}
+        aria-hidden="true"
+      />
       <a
         className="park-skip"
         href={PROFILE_PATH}
@@ -246,7 +267,7 @@ export default function App() {
         className="world-stage"
         ref={worldFocus}
         tabIndex={-1}
-        aria-label="Driving area. WASD or arrows to drive, space to brake, shift to boost, E to interact, M for map."
+        aria-label="Driving area. WASD or arrows to drive, space to brake or drift, shift for nitro, E to interact, M for map."
       >
         {flat ? (
           <div className="flat-world">
@@ -276,6 +297,7 @@ export default function App() {
                 reduced={reduced}
                 low={low}
                 intro={intro}
+                garage={garage}
               />
             </Suspense>
           </SceneBoundary>
@@ -433,13 +455,27 @@ export default function App() {
               </p>
             )}
           </section>
-          <aside className="speedometer">
+          <aside
+            className={"speedometer racing-hud" + (boosting ? " is-boosting" : "")}
+            aria-label={`${speed} kilometres per hour, gear ${gear}, nitro ${Math.round(nitro * 100)} percent`}
+          >
+            <div className="tach" aria-hidden="true">
+              <svg viewBox="0 0 120 120">
+                <g transform="rotate(135 60 60)">
+                  <circle className="tach-track" cx="60" cy="60" r="50" pathLength="100" strokeDasharray="75 100" />
+                  <circle className="tach-red" cx="60" cy="60" r="50" pathLength="100" strokeDasharray="10 100" strokeDashoffset="-65" />
+                  <circle className="tach-fill" cx="60" cy="60" r="50" pathLength="100" strokeDasharray={`${(75 * rpm).toFixed(1)} 100`} />
+                </g>
+              </svg>
+              <span className="gear">{gear}</span>
+            </div>
             <strong>
-              {speed.toString().padStart(2, "0")}
+              {speed.toString().padStart(3, "0")}
               <small>KM/H</small>
             </strong>
-            <div>
-              {vehicle === "car" ? "GT / SPORTS CAR" : "RR / SUPERBIKE"}
+            <div className="nitro" aria-hidden="true">
+              <small>NITRO</small>
+              <i style={{ width: `${Math.round(nitro * 100)}%` }} />
             </div>
             <span>
               {game.snapshot.lapStart === null
@@ -482,7 +518,7 @@ export default function App() {
                 ["right", "→"],
                 ["reverse", "Reverse"],
                 ["brake", "Brake"],
-                ["boost", "Boost"],
+                ["boost", "Nitro"],
                 ["go", "Go ↑"],
               ].map(([action, label]) => (
                 <button
@@ -524,7 +560,7 @@ export default function App() {
             </div>
           )}
           <div className="desktop-drive-help">
-            <kbd>WASD</kbd> drive <kbd>SPACE</kbd> brake <kbd>SHIFT</kbd> boost
+            <kbd>WASD</kbd> drive <kbd>SPACE</kbd> brake / drift <kbd>SHIFT</kbd> nitro
           </div>
         </>
       )}
@@ -606,10 +642,50 @@ export default function App() {
                   aria-pressed={vehicle === v}
                   onClick={() => setVehicle(v)}
                 >
-                  {v === "car" ? "Sports car" : "Motorcycle"}
+                  {v === "car" ? "Street racer" : "Superbike"}
                 </button>
               ))}
             </fieldset>
+            <fieldset className="garage-picker">
+              <legend>Paint</legend>
+              {(Object.keys(paints) as Paint[]).map((k) => (
+                <button
+                  key={k}
+                  className="swatch"
+                  style={{ ["--swatch" as string]: paints[k].body, ["--swatch-accent" as string]: paints[k].accent }}
+                  aria-pressed={garage.paint === k}
+                  aria-label={paints[k].name}
+                  title={paints[k].name}
+                  onClick={() => setGarage((g) => ({ ...g, paint: k }))}
+                />
+              ))}
+            </fieldset>
+            <fieldset className="garage-picker">
+              <legend>Underglow</legend>
+              {(Object.keys(glows) as Glow[]).map((k) => (
+                <button
+                  key={k}
+                  className={"swatch" + (k === "off" ? " swatch-off" : " swatch-glow")}
+                  style={{ ["--swatch" as string]: glows[k].color || "transparent" }}
+                  aria-pressed={garage.glow === k}
+                  aria-label={`Underglow: ${glows[k].name}`}
+                  title={glows[k].name}
+                  onClick={() => setGarage((g) => ({ ...g, glow: k }))}
+                >
+                  {k === "off" ? "Off" : ""}
+                </button>
+              ))}
+            </fieldset>
+            <label className="setting-row">
+              <span>
+                Livery<small>Racing graphics on the bodywork</small>
+              </span>
+              <input
+                type="checkbox"
+                checked={garage.livery}
+                onChange={(e) => setGarage((g) => ({ ...g, livery: e.target.checked }))}
+              />
+            </label>
             <fieldset>
               <legend>Atmosphere</legend>
               {(["day", "sunset", "night"] as Mood[]).map((m) => (
@@ -648,9 +724,10 @@ export default function App() {
             </button>
             <h3>How to explore</h3>
             <p>
-              WASD or arrows: steer, accelerate and reverse. Space: brake and
-              drift. Shift: boost. E: visit a nearby destination. M: map. R:
-              respawn.
+              WASD or arrows: steer, accelerate and reverse. Space: brake;
+              hold it while steering to drift. Shift: nitro, which refills over
+              time and faster while you drift. E: visit a nearby destination.
+              M: map. R: respawn.
             </p>
             <p>
               Drive the track through all four checkpoints to complete a timed
