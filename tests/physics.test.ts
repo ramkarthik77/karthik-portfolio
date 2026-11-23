@@ -118,3 +118,29 @@ test("guided tour reaches all destinations without crossing a building", async (
   }
   assert.deepEqual(visits, [0, 1, 2, 3, 4]);
 });
+
+test("nitro drains while boosting, runs out, and refills", () => {
+  const s = createState();
+  s.x = -15;
+  s.z = 21;
+  s.heading = Math.PI / 2;
+  drive(s, { throttle: 1, boost: true }, 1);
+  assert.ok(s.boosting);
+  assert.ok(s.nitro < 0.8 && s.nitro > 0.7);
+  s.nitro = 0;
+  drive(s, { throttle: 1, boost: true }, 0.1);
+  assert.equal(s.boosting, false);
+  drive(s, { throttle: 1 }, 2);
+  assert.ok(s.nitro > 0.1);
+});
+test("handbrake turns produce a slide that earns nitro", () => {
+  const s = createState();
+  s.x = 0;
+  s.z = 21;
+  s.heading = Math.PI / 2;
+  drive(s, { throttle: 1 }, 2);
+  s.nitro = 0.2;
+  drive(s, { throttle: 1, steering: 1, brake: true }, 0.4);
+  assert.ok(Math.abs(s.slip) > 4);
+  assert.ok(s.nitro > 0.2);
+});
