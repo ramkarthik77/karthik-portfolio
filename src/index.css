@@ -158,7 +158,11 @@ h3 { font-family: var(--display); font-size: 1.3rem; letter-spacing: -0.01em; }
   padding: 10px 22px; border: 1px solid var(--line); border-radius: 999px;
 }
 @keyframes scroll { to { transform: translateX(-50%); } }
-@media (prefers-reduced-motion: reduce) { .marquee-track { animation: none; flex-wrap: wrap; width: auto; } }
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track { animation: none; flex-wrap: wrap; width: auto; }
+  /* the second copy only exists to make the scroll loop seamless */
+  .marquee-track span[aria-hidden="true"] { display: none; }
+}
 .edu { margin-top: 48px; display: flex; flex-wrap: wrap; gap: 12px 40px; color: var(--muted); }
 .edu strong { color: var(--text); font-weight: 600; }
 
@@ -187,3 +191,9 @@ h3 { font-family: var(--display); font-size: 1.3rem; letter-spacing: -0.01em; }
 .video-frame video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
 @media (max-width: 719px) { .video-frame video { aspect-ratio: 9 / 16; max-height: 80svh; } }
 
+
+/* Products */
+.product-type { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--cool); margin: 0 0 10px !important; }
+.product-meta { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; border-top: 1px solid var(--line); padding-top: 14px; }
+.product-status { font-family: var(--mono); font-size: 0.8rem; color: var(--muted); }
+.product-meta a { color: var(--accent); font-weight: 600; }

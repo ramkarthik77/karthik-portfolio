@@ -46,6 +46,7 @@ export default function App({ disableScene = false }: { disableScene?: boolean }
           <a href="#about">About</a>
           <a href="#career">Career</a>
           <a href="#work">Work</a>
+          <a href="#products">AI</a>
           <a href="#contact">Contact</a>
         </div>
       </nav>
@@ -137,8 +138,27 @@ export default function App({ disableScene = false }: { disableScene?: boolean }
           <ProjectShowcase projects={profile.work} />
         </section>
 
+        <section id="products" className="section">
+          <p className="section-label reveal">05 — Building with AI</p>
+          <div className="cards">
+            {profile.products.map((item) => (
+              <article key={item.title} className="card reveal">
+                <p className="product-type">{item.type}</p>
+                <h3>{item.title}</h3>
+                <p>{item.body}</p>
+                <div className="product-meta">
+                  <span className="product-status">{item.status}</span>
+                  {item.url && (
+                    <a href={item.url} target="_blank" rel="noopener noreferrer">Visit project ↗</a>
+                  )}
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
         <section className="section">
-          <p className="section-label reveal">05 — Stack</p>
+          <p className="section-label reveal">06 — Stack</p>
           <div className="marquee reveal" aria-label="Technologies">
             <div className="marquee-track">
               {[...profile.stack, ...profile.stack].map((t, i) => (
@@ -154,7 +174,7 @@ export default function App({ disableScene = false }: { disableScene?: boolean }
         </section>
 
         <section id="contact" className="section contact">
-          <p className="section-label reveal">06 — Contact</p>
+          <p className="section-label reveal">07 — Contact</p>
           <h2 className="reveal">Let’s build something that scales.</h2>
           <a className="mail reveal" href={`mailto:${profile.email}`}>{profile.email}</a>
           <div className="socials reveal">

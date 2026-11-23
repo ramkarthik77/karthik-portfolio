@@ -41,6 +41,10 @@ function saved<T extends string>(key: string, values: T[], fallback: T): T {
     return fallback;
   }
 }
+const PROFILE_PATH = "/profile";
+const onProfilePath = () =>
+  typeof location !== "undefined" &&
+  location.pathname.replace(/\/+$/, "") === PROFILE_PATH;
 function RideIcon({ bike = false }: { bike?: boolean }) {
   return (
     <svg viewBox="0 0 48 25" aria-hidden="true">
@@ -61,7 +65,7 @@ function RideIcon({ bike = false }: { bike?: boolean }) {
   );
 }
 export default function App() {
-  const [classic, setClassic] = useState(false),
+  const [classic, setClassicState] = useState(onProfilePath),
     [intro, setIntro] = useState(true),
     [menu, setMenu] = useState<"map" | "settings" | null>(null),
     [stop, setStop] = useState<number | null>(null);
@@ -73,12 +77,24 @@ export default function App() {
   );
   const [mode, setMode] = useState<DriveMode>("free"),
     [cameraMode, setCameraMode] = useState<CameraMode>("orbit"),
-    [low, setLow] = useState(() => matchMedia("(max-width: 700px)").matches);
+    [low, setLow] = useState(false);
   const [reduced, setReduced] = useState(
       () => matchMedia("(prefers-reduced-motion: reduce)").matches,
     ),
     [flat, setFlat] = useState(false),
     [manualPause, setManualPause] = useState(false);
+  // The Quick profile lives at /profile so it can be shared and bookmarked.
+  const setClassic = useCallback((on: boolean) => {
+    setClassicState(on);
+    const target = on ? PROFILE_PATH : "/";
+    if (location.pathname !== target) history.pushState(null, "", target);
+    window.scrollTo(0, 0);
+  }, []);
+  useEffect(() => {
+    const sync = () => setClassicState(onProfilePath());
+    window.addEventListener("popstate", sync);
+    return () => window.removeEventListener("popstate", sync);
+  }, []);
   const [visited, setVisited] = useState<number[]>([]),
     [sound, setSound] = useState(false);
   const audio = useRef<{
@@ -218,10 +234,13 @@ export default function App() {
     <div className={`motor-park theme-${mood}`}>
       <a
         className="park-skip"
-        href="#park-navigation"
-        onClick={() => setMenu("map")}
+        href={PROFILE_PATH}
+        onClick={(e) => {
+          e.preventDefault();
+          setClassic(true);
+        }}
       >
-        Skip driving · explore profile
+        Skip driving · read quick profile
       </a>
       <div
         className="world-stage"
@@ -325,7 +344,8 @@ export default function App() {
             ⚙
           </button>
           <button className="quick-profile" onClick={() => setClassic(true)}>
-            Quick profile ↗
+            <span className="qp-long">Quick profile</span>
+            <span className="qp-short">Profile</span> ↗
           </button>
         </div>
       </header>
@@ -353,7 +373,7 @@ export default function App() {
       {intro ? (
         <section className="welcome-card">
           <p className="park-eyebrow">
-            ARCHITECT BY PROFESSION. BUILDER BY INSTINCT.
+            AEM CLOUD ARCHITECT · 16+ YEARS · 100+ SITES
           </p>
           <h1>
             Engineering the future
@@ -361,16 +381,19 @@ export default function App() {
             beyond the finish line<span>.</span>
           </h1>
           <p>
-            I’m Karthik Guduri — AEM Cloud Architect. Ride through my world of
-            <br className="desktop-break" /> cloud platforms, creative ideas,
-            and AI.
+            I’m Karthik Guduri, an AEM Cloud Architect leading the platform
+            behind 100+ enterprise sites.
+            <br className="desktop-break" /> Drive through my world of cloud
+            platforms and AI, or read the quick profile.
           </p>
           <div className="welcome-actions">
             <button className="park-primary" onClick={() => start()}>
               Let’s drive <span>↗</span>
             </button>
             <button onClick={() => start(true)}>Show me around →</button>
-            <button onClick={() => { setIntro(false); setMenu("map"); }}>Explore work without driving ↗</button>
+            <button className="welcome-profile" onClick={() => setClassic(true)}>
+              Quick profile ↗
+            </button>
           </div>
           <div className="welcome-controls">
             <kbd>W A S D</kbd>
