@@ -7,6 +7,9 @@ import type { State } from "../world/physics";
 import type { Mood, Vehicle, CameraMode } from "../world/config";
 import Scenery from "../world/Scenery";
 import Vehicles from "../world/Vehicles";
+import DriftFX from "../world/DriftFX";
+import { glows, paints } from "../world/garage";
+import type { Garage } from "../world/garage";
 import { NightSky, Sky } from "../world/Atmosphere";
 import { looks } from "../world/looks";
 import type { Tier } from "../world/Effects";
@@ -23,6 +26,7 @@ type Props = {
   reduced: boolean;
   low: boolean;
   intro: boolean;
+  garage: Garage;
 };
 
 /** ?quality=high|medium|low pins the render tier (useful for demos and screenshots). */
@@ -80,6 +84,7 @@ function World({
   reduced,
   tier,
   intro,
+  garage,
 }: Omit<Props, "low"> & { tier: Tier }) {
   const rig = useRef<THREE.Group>(null),
     lean = useRef<THREE.Group>(null);
@@ -130,10 +135,18 @@ function World({
     const blend = reduced ? 1 : 1 - Math.exp(-Math.min(delta, 0.05) * 3);
     camera.position.lerp(cameraPosition, blend);
     look.lerp(target, blend);
+    // A little shake on nitro in the chase view.
+    if (chase && s.boosting) {
+      const k = 0.06 * Math.min(speed / 25, 1);
+      camera.position.x += (Math.random() - 0.5) * k;
+      camera.position.y += (Math.random() - 0.5) * k;
+    }
     camera.lookAt(look);
-    // Widen the lens with speed in the chase view for a sense of pace.
+    // Widen the lens with speed in the chase view for a sense of pace, more on nitro.
     if (camera instanceof THREE.PerspectiveCamera) {
-      const fov = chase ? 43 + Math.min(speed / 30, 1) * 11 : 43;
+      const fov = chase
+        ? 43 + Math.min(speed / 30, 1) * 11 + (s.boosting ? 7 : 0)
+        : 43;
       if (Math.abs(camera.fov - fov) > 0.01) {
         camera.fov += (fov - camera.fov) * Math.min(1, delta * 3);
         camera.updateProjectionMatrix();
@@ -190,6 +203,26 @@ function World({
           color={l.fill}
           intensity={1.2}
         />
+        {mood === "night" && (
+          <>
+            <Lightformer
+              form="rect"
+              position={[-20, 5, -25]}
+              rotation={[0, 0.6, 0]}
+              scale={[30, 3, 1]}
+              color="#ff2bd6"
+              intensity={4}
+            />
+            <Lightformer
+              form="rect"
+              position={[22, 4, 25]}
+              rotation={[0, -2.5, 0]}
+              scale={[30, 3, 1]}
+              color="#19e3ff"
+              intensity={4}
+            />
+          </>
+        )}
         <Lightformer
           form="ring"
           position={[0, 12, -30]}
@@ -199,9 +232,19 @@ function World({
         />
       </Environment>
       <Scenery mood={mood} state={state} near={near} />
+      <DriftFX state={state} vehicle={vehicle} mood={mood} reduced={reduced} />
       <group ref={rig}>
         <group ref={lean}>
-          <Vehicles kind={vehicle} state={state} />
+          <Vehicles
+            kind={vehicle}
+            state={state}
+            paint={paints[garage.paint].body}
+            accent={paints[garage.paint].accent}
+            caliper={paints[garage.paint].caliper}
+            livery={garage.livery}
+            glow={glows[garage.glow].color}
+            glowLevel={mood === "night" ? 1 : mood === "sunset" ? 0.55 : 0.3}
+          />
         </group>
         {shadows && <Headlights mood={mood} />}
         {mood === "night" && (
@@ -270,6 +313,7 @@ function Circuit(props: Props) {
         reduced={props.reduced}
         intro={props.intro}
         tier={tier}
+        garage={props.garage}
       />
     </Canvas>
   );

@@ -4,6 +4,7 @@ import { RoundedBox } from "@react-three/drei";
 import * as THREE from "three";
 import type { State } from "./physics";
 import type { Vehicle } from "./config";
+import StreetCar from "./StreetCar";
 import type { RefObject } from "react";
 export function Block({
   p = [0, 0, 0],
@@ -105,22 +106,6 @@ function Shell({
     </mesh>
   );
 }
-const BODY: [number, number][] = [
-  [-2.2, 0.42],
-  [-2.18, 0.87],
-  [-1.5, 1],
-  [-0.5, 1.02],
-  [0.8, 0.91],
-  [1.9, 0.74],
-  [2.18, 0.5],
-  [2.12, 0.36],
-];
-const CABIN: [number, number][] = [
-  [-1.2, 1],
-  [-0.55, 1.65],
-  [0.5, 1.57],
-  [1.1, 0.94],
-];
 const FAIRING: [number, number][] = [
   [-0.8, 0.7],
   [-0.3, 1.25],
@@ -190,51 +175,33 @@ export default function Vehicles({
   kind,
   state,
   paint = "#ed7540",
+  accent = "#14181c",
+  caliper = "#f2f2f2",
+  livery = false,
+  glow = "",
+  glowLevel = 1,
 }: {
   kind: Vehicle;
   state?: RefObject<State>;
   paint?: string;
+  accent?: string;
+  caliper?: string;
+  livery?: boolean;
+  /** Underglow colour; empty for none. */
+  glow?: string;
+  /** Underglow brightness; dimmer in daylight. */
+  glowLevel?: number;
 }) {
   return kind === "car" ? (
-    <group>
-      <Shell points={BODY} width={1.95} color={paint} />
-      <Shell points={CABIN} width={1.5} color="#3a5260" glass />
-      <Block p={[0, 1.63, -0.05]} s={[1.48, 0.07, 0.8]} color={paint} />
-      <Block p={[0, 0.97, 1.2]} s={[0.23, 0.025, 1.05]} color="#f5e3c6" />
-      <Block p={[0, 1.02, -1.65]} s={[0.23, 0.025, 0.65]} color="#f5e3c6" />
-      <Block p={[0, 0.38, 2.12]} s={[1.98, 0.09, 0.2]} color="#24343e" />
-      {[-1.02, 1.02].flatMap((x) =>
-        [-1.38, 1.34].map((z) => (
-          <Wheel key={`${x},${z}`} x={x} z={z} front={z > 0} state={state} />
-        )),
-      )}
-      {[-0.71, 0.71].map((x) => (
-        <group key={x}>
-          <Block
-            p={[x, 0.68, 1.99]}
-            s={[0.45, 0.09, 0.12]}
-            color="#fff0cc"
-            glow={5}
-          />
-          <Block
-            p={[x, 0.7, -2.19]}
-            s={[0.5, 0.07, 0.06]}
-            color="#f34d43"
-            glow={3.5}
-          />
-          <Block p={[x, 1.17, -1.75]} s={[0.06, 0.44, 0.1]} color="#273a45" />
-        </group>
-      ))}
-      <Block p={[0, 1.4, -1.82]} s={[2.16, 0.09, 0.37]} color="#263944" />
-      {[-1.1, 1.1].map((x) => (
-        <Block
-          key={x}
-          p={[x, 1.08, 0.45]}
-          s={[0.23, 0.12, 0.32]}
-          color={paint}
-        />
-      ))}
-    </group>
+    <StreetCar
+      body={paint}
+      accent={accent}
+      caliper={caliper}
+      livery={livery}
+      glow={glow}
+      glowLevel={glowLevel}
+      state={state}
+    />
   ) : (
     <group>
       <Wheel x={0} z={1.12} bike front state={state} />
@@ -243,6 +210,23 @@ export default function Vehicles({
       <Shell points={FAIRING} width={0.6} color={paint} />
       <Block p={[0, 1.21, -0.65]} s={[0.48, 0.14, 0.83]} color="#263742" />
       <Block p={[0, 1.34, -1.1]} s={[0.33, 0.1, 0.45]} color={paint} />
+      <Block p={[0, 1.4, -1.1]} s={[0.08, 0.02, 0.46]} color={accent} />
+      {glow && (
+        <>
+          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.06, 0]}>
+            <planeGeometry args={[1.4, 3.2]} />
+            <meshBasicMaterial
+              color={new THREE.Color(glow).multiplyScalar(1.6)}
+              transparent
+              opacity={0.35}
+              depthWrite={false}
+              blending={THREE.AdditiveBlending}
+              toneMapped={false}
+            />
+          </mesh>
+          <pointLight position={[0, 0.3, 0]} color={glow} intensity={5} distance={4} decay={2} />
+        </>
+      )}
       <mesh position={[0, 1.5, 0.72]} rotation={[0.4, 0, 0]}>
         <boxGeometry args={[0.47, 0.45, 0.06]} />
         <meshPhysicalMaterial

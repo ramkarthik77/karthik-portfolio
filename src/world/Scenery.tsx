@@ -58,10 +58,11 @@ function asphaltMaterial(mood: Mood, repeatX: number, repeatY: number) {
     map: tiled(t?.map, repeatX, repeatY),
     bumpMap: tiled(t?.bump, repeatX, repeatY),
     roughnessMap: tiled(t?.bump, repeatX, repeatY),
-    bumpScale: 1.4,
-    // Night asphalt reads slightly damp so headlights and lamps catch it.
-    roughness: mood === "night" ? 0.62 : 0.95,
-    metalness: 0,
+    bumpScale: mood === "night" ? 0.8 : 1.4,
+    // Night streets are rain-wet: glossy, with the grain map breaking the sheen into puddles.
+    roughness: mood === "night" ? 0.34 : 0.95,
+    metalness: mood === "night" ? 0.15 : 0,
+    envMapIntensity: mood === "night" ? 1.8 : 1,
   };
 }
 function RoadSlab({
@@ -164,6 +165,27 @@ function Road({ mood }: { mood: Mood }) {
     </group>
   );
 }
+const NEON = ["#ff2bd6", "#19e3ff", "#a855ff", "#7dff3a", "#ff8a1f"];
+/** Neon tube running round the roofline after dark. */
+function NeonTrim({ color }: { color: string }) {
+  const bars: { p: [number, number, number]; s: [number, number, number] }[] = [
+    { p: [0, 4.98, 6.03], s: [17, 0.09, 0.09] },
+    { p: [0, 4.98, -6.03], s: [17, 0.09, 0.09] },
+    { p: [8.53, 4.98, 0], s: [0.09, 0.09, 12] },
+    { p: [-8.53, 4.98, 0], s: [0.09, 0.09, 12] },
+    { p: [0, 0.34, 7.03], s: [19, 0.06, 0.06] },
+  ];
+  return (
+    <>
+      {bars.map((b) => (
+        <mesh key={b.p.join()} position={b.p}>
+          <boxGeometry args={b.s} />
+          <meshBasicMaterial color={new THREE.Color(color).multiplyScalar(3)} toneMapped={false} />
+        </mesh>
+      ))}
+    </>
+  );
+}
 function Building({ index, mood }: { index: number; mood: Mood }) {
   const d = destinations[index],
     color = palettes[mood].building;
@@ -191,6 +213,7 @@ function Building({ index, mood }: { index: number; mood: Mood }) {
         />
       ))}
       <Block p={[0, 4.5, 5.9]} s={[15, 0.8, 0.3]} color="#293d46" />
+      {mood === "night" && <NeonTrim color={NEON[index % NEON.length]} />}
       <Sign
         text={
           [
