@@ -6,6 +6,8 @@ import { destinations, palettes } from "./config";
 import type { Mood } from "./config";
 import type { State } from "./physics";
 import Vehicles, { Block } from "./Vehicles";
+import { looks } from "./looks";
+import { asphaltTextures, groundTexture, tiled } from "./textures";
 
 function Sign({
   text,
@@ -49,7 +51,48 @@ function Sign({
     </mesh>
   );
 }
+function asphaltMaterial(mood: Mood, repeatX: number, repeatY: number) {
+  const t = asphaltTextures();
+  return {
+    color: palettes[mood].road,
+    map: tiled(t?.map, repeatX, repeatY),
+    bumpMap: tiled(t?.bump, repeatX, repeatY),
+    roughnessMap: tiled(t?.bump, repeatX, repeatY),
+    bumpScale: 1.4,
+    // Night asphalt reads slightly damp so headlights and lamps catch it.
+    roughness: mood === "night" ? 0.62 : 0.95,
+    metalness: 0,
+  };
+}
+function RoadSlab({
+  mood,
+  p,
+  size,
+}: {
+  mood: Mood;
+  p: [number, number, number];
+  size: [number, number];
+}) {
+  const material = useMemo(
+    () => asphaltMaterial(mood, size[0] / 9, size[1] / 9),
+    [mood, size],
+  );
+  return (
+    <mesh position={p} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+      <planeGeometry args={size} />
+      <meshStandardMaterial {...material} />
+    </mesh>
+  );
+}
+const SLABS: { p: [number, number, number]; size: [number, number] }[] = [
+  { p: [0, 0.03, 21], size: [115, 13] },
+  { p: [-30, 0.031, -5], size: [13, 65] },
+  { p: [0, 0.032, -25], size: [92, 13] },
+  { p: [35, 0.033, -4], size: [13, 60] },
+  { p: [0, 0.034, 40], size: [13, 37] },
+];
 function Road({ mood }: { mood: Mood }) {
+  const ring = useMemo(() => asphaltMaterial(mood, 1 / 9, 1 / 9), [mood]);
   const shape = useMemo(() => {
     const s = new THREE.Shape();
     s.absellipse(0, 0, 74, 52, 0, Math.PI * 2, false, 0);
@@ -65,34 +108,12 @@ function Road({ mood }: { mood: Mood }) {
         position={[0, 0.025, 0]}
         receiveShadow
       >
-        <shapeGeometry args={[shape, 100]} />
-        <meshStandardMaterial color={palettes[mood].road} roughness={0.9} />
+        <shapeGeometry args={[shape, 160]} />
+        <meshStandardMaterial {...ring} />
       </mesh>
-      <Block
-        p={[0, 0.015, 21]}
-        s={[115, 0.03, 13]}
-        color={palettes[mood].road}
-      />
-      <Block
-        p={[-30, 0.015, -5]}
-        s={[13, 0.03, 65]}
-        color={palettes[mood].road}
-      />
-      <Block
-        p={[0, 0.015, -25]}
-        s={[92, 0.03, 13]}
-        color={palettes[mood].road}
-      />
-      <Block
-        p={[35, 0.015, -4]}
-        s={[13, 0.03, 60]}
-        color={palettes[mood].road}
-      />
-      <Block
-        p={[0, 0.015, 40]}
-        s={[13, 0.03, 37]}
-        color={palettes[mood].road}
-      />
+      {SLABS.map((slab) => (
+        <RoadSlab key={slab.p.join()} mood={mood} p={slab.p} size={slab.size} />
+      ))}
       {Array.from({ length: 64 }, (_, i) => {
         const a = (i / 64) * Math.PI * 2;
         return (
@@ -154,8 +175,12 @@ function Building({ index, mood }: { index: number; mood: Mood }) {
       <Block
         p={[0, 3.2, 5.57]}
         s={[14, 2.6, 0.13]}
-        color="#3e5962"
+        color="#2b414b"
         radius={0.05}
+        metal={0.85}
+        rough={0.08}
+        emissive="#ffc98a"
+        glow={looks[mood].windowGlow}
       />
       {[-5, -1.6, 1.6, 5].map((x) => (
         <Block
@@ -272,17 +297,50 @@ function Trees({ mood }: { mood: Mood }) {
             <cylinderGeometry args={[0.25, 0.4, 2.6, 6]} />
             <meshStandardMaterial color="#8b7761" />
           </mesh>
-          {[0, 1].map((j) => (
-            <mesh key={j} position={[0, 3.4 + j * 1.5, 0]} castShadow>
-              <coneGeometry args={[2.2 - j * 0.6, 3.5, 6]} />
+          {[0, 1, 2].map((j) => (
+            <mesh key={j} position={[0, 3.1 + j * 1.25, 0]} castShadow receiveShadow>
+              <coneGeometry args={[2.35 - j * 0.6, 3.1, 12]} />
               <meshStandardMaterial
                 color={
-                  mood === "night" ? "#486777" : i % 3 ? "#6e8c79" : "#a8a16c"
+                  mood === "night"
+                    ? ["#3d5866", "#47626b", "#36505e"][i % 3]
+                    : ["#5f7f5a", "#6f8c63", "#8e9a5d"][i % 3]
                 }
-                flatShading
+                roughness={0.85}
               />
             </mesh>
           ))}
+        </group>
+      ))}
+    </group>
+  );
+}
+const lampLocations = Array.from({ length: 16 }, (_, i) => {
+  const a = (i / 16) * Math.PI * 2 + 0.1;
+  return { x: 59 * Math.cos(a), z: 37.5 * Math.sin(a), a };
+});
+function Lamps({ mood }: { mood: Mood }) {
+  const glow = looks[mood].lampGlow;
+  return (
+    <group>
+      {lampLocations.map((l, i) => (
+        <group key={i} position={[l.x, 0, l.z]} rotation={[0, -l.a + Math.PI / 2, 0]}>
+          <mesh position={[0, 2.6, 0]} castShadow>
+            <cylinderGeometry args={[0.08, 0.11, 5.2, 10]} />
+            <meshStandardMaterial color="#5c666b" metalness={0.75} roughness={0.35} />
+          </mesh>
+          <mesh position={[0, 5.15, 0.55]}>
+            <boxGeometry args={[0.12, 0.1, 1.2]} />
+            <meshStandardMaterial color="#5c666b" metalness={0.75} roughness={0.35} />
+          </mesh>
+          <mesh position={[0, 5.05, 1.1]}>
+            <boxGeometry args={[0.42, 0.12, 0.62]} />
+            <meshStandardMaterial
+              color={glow ? "#fff2d6" : "#d9d6cc"}
+              emissive="#ffd39a"
+              emissiveIntensity={glow}
+            />
+          </mesh>
         </group>
       ))}
     </group>
@@ -325,6 +383,15 @@ function Props({ state }: { state: RefObject<State> }) {
     </group>
   );
 }
+function Ground({ color }: { color: string }) {
+  const map = useMemo(() => tiled(groundTexture() ?? undefined, 9, 7), []);
+  return (
+    <mesh position={[0, -1, 0]} receiveShadow>
+      <boxGeometry args={[198, 2, 152]} />
+      <meshStandardMaterial color={color} map={map} roughness={0.95} />
+    </mesh>
+  );
+}
 export default function Scenery({
   mood,
   state,
@@ -339,11 +406,17 @@ export default function Scenery({
     <group>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2, 0]}>
         <planeGeometry args={[1500, 1500]} />
-        <meshStandardMaterial color={p.water} roughness={0.4} metalness={0.1} />
+        <meshStandardMaterial
+          color={p.water}
+          roughness={0.12}
+          metalness={0.35}
+          envMapIntensity={1.4}
+        />
       </mesh>
-      <Block p={[0, -1, 0]} s={[198, 2, 152]} color={p.ground} radius={1} />
+      <Ground color={p.ground} />
       <Road mood={mood} />
       <Trees mood={mood} />
+      <Lamps mood={mood} />
       {destinations.map((d, i) => (
         <group key={d.id}>
           <Building index={i} mood={mood} />

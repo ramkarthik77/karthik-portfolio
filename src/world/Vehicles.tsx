@@ -12,6 +12,8 @@ export function Block({
   radius = 0.08,
   metal = 0.15,
   glow = 0,
+  rough = 0.35,
+  emissive,
 }: {
   p?: [number, number, number];
   s?: [number, number, number];
@@ -19,6 +21,9 @@ export function Block({
   radius?: number;
   metal?: number;
   glow?: number;
+  rough?: number;
+  /** Emissive colour when it should differ from the base colour (e.g. lit windows). */
+  emissive?: string;
 }) {
   return (
     <RoundedBox
@@ -31,9 +36,9 @@ export function Block({
     >
       <meshStandardMaterial
         color={color}
-        roughness={0.35}
+        roughness={rough}
         metalness={metal}
-        emissive={color}
+        emissive={emissive ?? color}
         emissiveIntensity={glow}
       />
     </RoundedBox>
@@ -44,11 +49,13 @@ function Shell({
   color,
   p = [0, 0, 0],
   width,
+  glass = false,
 }: {
   points: [number, number][];
   color: string;
   p?: [number, number, number];
   width: number;
+  glass?: boolean;
 }) {
   const shape = useMemo(() => {
     const s = new THREE.Shape();
@@ -75,12 +82,26 @@ function Shell({
           },
         ]}
       />
-      <meshPhysicalMaterial
-        color={color}
-        metalness={0.45}
-        roughness={0.25}
-        clearcoat={1}
-      />
+      {glass ? (
+        <meshPhysicalMaterial
+          color={color}
+          metalness={0.55}
+          roughness={0.1}
+          clearcoat={1}
+          clearcoatRoughness={0.02}
+          envMapIntensity={2.2}
+        />
+      ) : (
+        // Metallic automotive paint: base flake layer under a glossy clearcoat.
+        <meshPhysicalMaterial
+          color={color}
+          metalness={0.62}
+          roughness={0.34}
+          clearcoat={1}
+          clearcoatRoughness={0.03}
+          envMapIntensity={1.35}
+        />
+      )}
     </mesh>
   );
 }
@@ -134,15 +155,15 @@ function Wheel({
     <group position={[x, r, z]} ref={steer}>
       <group ref={spin}>
         <mesh rotation={[0, Math.PI / 2, 0]} castShadow>
-          <torusGeometry args={[r - 0.1, 0.12, 8, 24]} />
-          <meshStandardMaterial color="#202b31" roughness={0.85} />
+          <torusGeometry args={[r - 0.1, 0.12, 12, 32]} />
+          <meshStandardMaterial color="#16191c" roughness={0.92} />
         </mesh>
         <mesh rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[r - 0.12, r - 0.12, w, 20]} />
+          <cylinderGeometry args={[r - 0.12, r - 0.12, w, 28]} />
           <meshStandardMaterial
-            color="#34404b"
-            metalness={0.7}
-            roughness={0.3}
+            color="#2a3036"
+            metalness={0.9}
+            roughness={0.28}
           />
         </mesh>
         {Array.from({ length: 5 }, (_, i) => (
@@ -150,9 +171,10 @@ function Wheel({
             <Block
               p={[0, 0, 0]}
               s={[w + 0.02, 0.065, r * 1.5]}
-              color="#dce2d7"
+              color="#d9dee2"
               radius={0.02}
-              metal={0.7}
+              metal={1}
+              rough={0.22}
             />
           </group>
         ))}
@@ -176,7 +198,7 @@ export default function Vehicles({
   return kind === "car" ? (
     <group>
       <Shell points={BODY} width={1.95} color={paint} />
-      <Shell points={CABIN} width={1.5} color="#30434c" />
+      <Shell points={CABIN} width={1.5} color="#3a5260" glass />
       <Block p={[0, 1.63, -0.05]} s={[1.48, 0.07, 0.8]} color={paint} />
       <Block p={[0, 0.97, 1.2]} s={[0.23, 0.025, 1.05]} color="#f5e3c6" />
       <Block p={[0, 1.02, -1.65]} s={[0.23, 0.025, 0.65]} color="#f5e3c6" />
@@ -192,13 +214,13 @@ export default function Vehicles({
             p={[x, 0.68, 1.99]}
             s={[0.45, 0.09, 0.12]}
             color="#fff0cc"
-            glow={2}
+            glow={5}
           />
           <Block
             p={[x, 0.7, -2.19]}
             s={[0.5, 0.07, 0.06]}
             color="#f34d43"
-            glow={1.5}
+            glow={3.5}
           />
           <Block p={[x, 1.17, -1.75]} s={[0.06, 0.44, 0.1]} color="#273a45" />
         </group>
@@ -224,11 +246,12 @@ export default function Vehicles({
       <mesh position={[0, 1.5, 0.72]} rotation={[0.4, 0, 0]}>
         <boxGeometry args={[0.47, 0.45, 0.06]} />
         <meshPhysicalMaterial
-          color="#789ba5"
+          color="#6f93a0"
           transparent
-          opacity={0.7}
-          metalness={0.2}
-          roughness={0.1}
+          opacity={0.55}
+          metalness={0.3}
+          roughness={0.04}
+          clearcoat={1}
         />
       </mesh>
       <Block p={[0, 1.45, 0.5]} s={[1, 0.08, 0.08]} color="#344853" />
@@ -268,13 +291,13 @@ export default function Vehicles({
         p={[0, 1.16, 1.1]}
         s={[0.36, 0.1, 0.08]}
         color="#fff0c9"
-        glow={2}
+        glow={5}
       />
       <Block
         p={[0, 1.36, -1.31]}
         s={[0.26, 0.05, 0.05]}
         color="#ed4a4a"
-        glow={2}
+        glow={3.5}
       />
     </group>
   );
