@@ -8,6 +8,9 @@ export const profile = {
   role: 'AEM Cloud Architect',
   tagline: 'I architect and run enterprise content platforms — 100+ sites, cloud-native, built to scale.',
   location: 'United States · Remote',
+  // Public address of the site. Used for canonical links, social previews and the sitemap.
+  // Change this if you move to a custom domain.
+  siteUrl: 'https://karthik-guduri-portfolio.pages.dev',
   email: 'guduriphaniram1988@gmail.com',
   linkedin: 'https://www.linkedin.com/in/karthik-g-a78406120',
   github: '', // add your GitHub profile URL once connected
@@ -23,12 +26,12 @@ export const profile = {
   introPoster: null as string | null,
 
   about: [
-    'I’m a senior engineer and AEM architect with 14+ years building enterprise web platforms across healthcare, financial services and telecom — from Adobe’s own support team to leading a platform team today.',
+    'I’m a senior engineer and AEM architect with 16+ years building enterprise web platforms across healthcare, financial services and telecom — from Adobe’s own support team to leading a platform team today.',
     'My work sits where content, cloud and engineering discipline meet: migrating large estates to AEM as a Cloud Service, designing multi-site architectures, automating delivery pipelines, and bringing AI-assisted development into everyday engineering.',
   ],
 
   stats: [
-    { value: '14+', label: 'years in enterprise engineering' },
+    { value: '16+', label: 'years in enterprise engineering' },
     { value: '100+', label: 'sites on the platform I lead' },
     { value: '4', label: 'industry leaders: Adobe, T-Mobile, T. Rowe Price, AbbVie' },
   ],
@@ -98,6 +101,35 @@ export const profile = {
       role: 'Java Developer',
       period: 'Jun 2010 — Jun 2014',
       points: ['Built J2EE modules for search, credit authentication and purchase flows (JSP, JMS/MQ, JDBC, PL/SQL).'],
+    },
+  ],
+
+  // Products and initiatives built outside the day job. Shown in the Innovation lab
+  // destination and in the Quick profile, so both views stay in sync.
+  products: [
+    {
+      title: 'Fluxa',
+      type: 'AI website lifecycle',
+      body: 'A product initiative for website discovery, migration, validation and delivery.',
+      stages: ['Discover', 'Transform', 'Validate', 'Deliver'],
+      status: 'In development',
+      url: '',
+    },
+    {
+      title: 'Sitecraft',
+      type: 'Enterprise content experience',
+      body: 'An enterprise CMS concept bringing content authoring, branching and human approval into one experience.',
+      stages: ['Author', 'Review', 'Approve', 'Release'],
+      status: 'In development',
+      url: '',
+    },
+    {
+      title: 'Tomorrow AI Land',
+      type: 'AI education',
+      body: 'Hands-on AI learning through lessons, labs and real projects.',
+      stages: ['Learn', 'Build', 'Test', 'Share'],
+      status: 'Live learning site',
+      url: 'https://www.tomorrowailand.us/',
     },
   ],
 

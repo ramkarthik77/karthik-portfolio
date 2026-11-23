@@ -36,6 +36,11 @@ export type State = {
   lapTime: number;
   bestLap: number | null;
   time: number;
+  /** Nitro tank, 0–1. Drains while boosting, refills over time and faster while drifting. */
+  nitro: number;
+  boosting: boolean;
+  /** Sideways speed in m/s; large values mean the tyres are sliding. */
+  slip: number;
 };
 export const createState = (): State => ({
   ...spawn,
@@ -52,6 +57,9 @@ export const createState = (): State => ({
   lapTime: 0,
   bestLap: null,
   time: 0,
+  nitro: 1,
+  boosting: false,
+  slip: 0,
 });
 export function respawn(s: State) {
   const nearest = destinations.reduce((a, b) =>
@@ -102,36 +110,64 @@ export function step(s: State, input: Controls, vehicle: Vehicle, dt: number) {
     oldZ = s.z,
     oldHeight = rampHeight(s.x, s.z);
   s.time += dt;
-  const fx = Math.sin(s.heading),
-    fz = Math.cos(s.heading);
-  let forward = s.vx * fx + s.vz * fz;
-  let lateral = s.vx * fz - s.vz * fx;
+  // Braking while steering hard is a handbrake turn: the rear lets go and the car rotates.
+  const handbrake =
+    vehicle === "car" && input.brake && Math.abs(input.steering) > 0.3;
   const road = onRoad(s.x, s.z),
-    grip = vehicle === "bike" ? 12 : input.brake ? 1.6 : 7;
+    grip = vehicle === "bike" ? 12 : handbrake ? 1.8 : input.brake ? 1.6 : 9;
+  // Once empty, nitro needs a little charge before it re-engages (no flicker).
+  const boosting =
+    input.boost &&
+    input.throttle > 0 &&
+    (s.boosting ? s.nitro > 0 : s.nitro > 0.1);
+  s.boosting = boosting;
   s.steering +=
     (clamp(input.steering, -1, 1) - s.steering) * Math.min(1, dt * 8);
   if (s.y < 0.2 || oldHeight > 0) {
+    const along = s.vx * Math.sin(s.heading) + s.vz * Math.cos(s.heading);
     s.heading +=
       s.steering *
-      clamp(forward / 8, -1, 1) *
-      (vehicle === "bike" ? 1.65 : 1.2) *
+      clamp(along / 8, -1, 1) *
+      (vehicle === "bike" ? 1.65 : handbrake ? 1.9 : 1.2) *
       dt;
+    // Split the existing velocity along the new heading. Whatever isn't lined up
+    // becomes sideways slide, which the tyres scrub off at the grip rate, so
+    // handbrake turns (low grip) drift.
+    const fx = Math.sin(s.heading),
+      fz = Math.cos(s.heading);
+    let forward = s.vx * fx + s.vz * fz;
+    let lateral = s.vx * fz - s.vz * fx;
     forward +=
       clamp(input.throttle, -1, 1) *
       (vehicle === "bike" ? 17 : 14) *
-      (input.boost ? 1.5 : 1) *
+      (boosting ? 1.5 : 1) *
       dt;
     forward *= Math.exp(
-      -(input.brake ? 5 : input.throttle === 0 ? 0.9 : road ? 0.25 : 0.75) * dt,
+      -(handbrake
+        ? 1.1
+        : input.brake
+          ? 5
+          : input.throttle === 0
+            ? 0.9
+            : road
+              ? 0.25
+              : 0.75) * dt,
     );
     forward = clamp(
       forward,
       -8,
-      input.boost ? 32 : vehicle === "bike" ? 25 : 22,
+      boosting ? 32 : vehicle === "bike" ? 25 : 22,
     );
     lateral *= Math.exp(-grip * dt);
-    s.vx = Math.sin(s.heading) * forward + Math.cos(s.heading) * lateral;
-    s.vz = Math.cos(s.heading) * forward - Math.sin(s.heading) * lateral;
+    s.slip = lateral;
+    const drifting = Math.abs(lateral) > 4 && Math.abs(forward) > 6;
+    s.nitro = clamp(
+      s.nitro + (boosting ? -dt / 4 : dt / 14) + (drifting ? dt / 4 : 0),
+      0,
+      1,
+    );
+    s.vx = fx * forward + fz * lateral;
+    s.vz = fz * forward - fx * lateral;
   }
   s.x += s.vx * dt;
   s.z += s.vz * dt;

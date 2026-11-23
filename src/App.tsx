@@ -12,6 +12,8 @@ import { destinations } from "./world/config";
 import type { Mood, Vehicle, DriveMode, CameraMode } from "./world/config";
 import { controlValue, useDriving, useKeys } from "./world/useDriving";
 import ParkMap from "./world/ParkMap";
+import { glows, loadGarage, paints, saveGarage } from "./world/garage";
+import type { Garage, Glow, Paint } from "./world/garage";
 import DestinationContent from "./world/DestinationContent";
 import "./motorsport.css";
 import "./experience-enhancements.css";
@@ -41,6 +43,10 @@ function saved<T extends string>(key: string, values: T[], fallback: T): T {
     return fallback;
   }
 }
+const PROFILE_PATH = "/profile";
+const onProfilePath = () =>
+  typeof location !== "undefined" &&
+  location.pathname.replace(/\/+$/, "") === PROFILE_PATH;
 function RideIcon({ bike = false }: { bike?: boolean }) {
   return (
     <svg viewBox="0 0 48 25" aria-hidden="true">
@@ -61,7 +67,7 @@ function RideIcon({ bike = false }: { bike?: boolean }) {
   );
 }
 export default function App() {
-  const [classic, setClassic] = useState(false),
+  const [classic, setClassicState] = useState(onProfilePath),
     [intro, setIntro] = useState(true),
     [menu, setMenu] = useState<"map" | "settings" | null>(null),
     [stop, setStop] = useState<number | null>(null);
@@ -71,14 +77,28 @@ export default function App() {
   const [mood, setMood] = useState<Mood>(() =>
     saved("kg.mood.v1", ["sunset", "night", "day"], "sunset"),
   );
+  const [garage, setGarage] = useState<Garage>(loadGarage);
+  useEffect(() => saveGarage(garage), [garage]);
   const [mode, setMode] = useState<DriveMode>("free"),
     [cameraMode, setCameraMode] = useState<CameraMode>("orbit"),
-    [low, setLow] = useState(() => matchMedia("(max-width: 700px)").matches);
+    [low, setLow] = useState(false);
   const [reduced, setReduced] = useState(
       () => matchMedia("(prefers-reduced-motion: reduce)").matches,
     ),
     [flat, setFlat] = useState(false),
     [manualPause, setManualPause] = useState(false);
+  // The Quick profile lives at /profile so it can be shared and bookmarked.
+  const setClassic = useCallback((on: boolean) => {
+    setClassicState(on);
+    const target = on ? PROFILE_PATH : "/";
+    if (location.pathname !== target) history.pushState(null, "", target);
+    window.scrollTo(0, 0);
+  }, []);
+  useEffect(() => {
+    const sync = () => setClassicState(onProfilePath());
+    window.addEventListener("popstate", sync);
+    return () => window.removeEventListener("popstate", sync);
+  }, []);
   const [visited, setVisited] = useState<number[]>([]),
     [sound, setSound] = useState(false);
   const audio = useRef<{
@@ -203,6 +223,19 @@ export default function App() {
   const speed = paused
     ? 0
     : Math.round(Math.hypot(game.snapshot.vx, game.snapshot.vz) * 3.6);
+  // Racing HUD: a simulated gearbox so the tach climbs and drops through the gears.
+  const along =
+    game.snapshot.vx * Math.sin(game.snapshot.heading) +
+    game.snapshot.vz * Math.cos(game.snapshot.heading);
+  const bands = [0, 28, 48, 66, 84, 100, 130];
+  const gearIndex = Math.max(1, bands.findIndex((b) => speed < b));
+  const gear = along < -0.5 ? "R" : speed < 2 ? "N" : String(Math.min(gearIndex, 6));
+  const lo = bands[gearIndex - 1] ?? 0,
+    hi = bands[gearIndex] ?? 130;
+  const rpm =
+    speed < 2 ? 0.12 : Math.min(1, 0.28 + (0.72 * (speed - lo)) / Math.max(1, hi - lo));
+  const nitro = game.snapshot.nitro,
+    boosting = !paused && game.snapshot.boosting;
   if (classic)
     return (
       <>
@@ -216,18 +249,25 @@ export default function App() {
     );
   return (
     <div className={`motor-park theme-${mood}`}>
+      <div
+        className={"speed-lines" + (boosting && !reduced && !intro ? " on" : "")}
+        aria-hidden="true"
+      />
       <a
         className="park-skip"
-        href="#park-navigation"
-        onClick={() => setMenu("map")}
+        href={PROFILE_PATH}
+        onClick={(e) => {
+          e.preventDefault();
+          setClassic(true);
+        }}
       >
-        Skip driving · explore profile
+        Skip driving · read quick profile
       </a>
       <div
         className="world-stage"
         ref={worldFocus}
         tabIndex={-1}
-        aria-label="Driving area. WASD or arrows to drive, space to brake, shift to boost, E to interact, M for map."
+        aria-label="Driving area. WASD or arrows to drive, space to brake or drift, shift for nitro, E to interact, M for map."
       >
         {flat ? (
           <div className="flat-world">
@@ -257,6 +297,7 @@ export default function App() {
                 reduced={reduced}
                 low={low}
                 intro={intro}
+                garage={garage}
               />
             </Suspense>
           </SceneBoundary>
@@ -325,7 +366,8 @@ export default function App() {
             ⚙
           </button>
           <button className="quick-profile" onClick={() => setClassic(true)}>
-            Quick profile ↗
+            <span className="qp-long">Quick profile</span>
+            <span className="qp-short">Profile</span> ↗
           </button>
         </div>
       </header>
@@ -353,7 +395,7 @@ export default function App() {
       {intro ? (
         <section className="welcome-card">
           <p className="park-eyebrow">
-            ARCHITECT BY PROFESSION. BUILDER BY INSTINCT.
+            AEM CLOUD ARCHITECT · 16+ YEARS · 100+ SITES
           </p>
           <h1>
             Engineering the future
@@ -361,16 +403,19 @@ export default function App() {
             beyond the finish line<span>.</span>
           </h1>
           <p>
-            I’m Karthik Guduri — AEM Cloud Architect. Ride through my world of
-            <br className="desktop-break" /> cloud platforms, creative ideas,
-            and AI.
+            I’m Karthik Guduri, an AEM Cloud Architect leading the platform
+            behind 100+ enterprise sites.
+            <br className="desktop-break" /> Drive through my world of cloud
+            platforms and AI, or read the quick profile.
           </p>
           <div className="welcome-actions">
             <button className="park-primary" onClick={() => start()}>
               Let’s drive <span>↗</span>
             </button>
             <button onClick={() => start(true)}>Show me around →</button>
-            <button onClick={() => { setIntro(false); setMenu("map"); }}>Explore work without driving ↗</button>
+            <button className="welcome-profile" onClick={() => setClassic(true)}>
+              Quick profile ↗
+            </button>
           </div>
           <div className="welcome-controls">
             <kbd>W A S D</kbd>
@@ -410,13 +455,27 @@ export default function App() {
               </p>
             )}
           </section>
-          <aside className="speedometer">
+          <aside
+            className={"speedometer racing-hud" + (boosting ? " is-boosting" : "")}
+            aria-label={`${speed} kilometres per hour, gear ${gear}, nitro ${Math.round(nitro * 100)} percent`}
+          >
+            <div className="tach" aria-hidden="true">
+              <svg viewBox="0 0 120 120">
+                <g transform="rotate(135 60 60)">
+                  <circle className="tach-track" cx="60" cy="60" r="50" pathLength="100" strokeDasharray="75 100" />
+                  <circle className="tach-red" cx="60" cy="60" r="50" pathLength="100" strokeDasharray="10 100" strokeDashoffset="-65" />
+                  <circle className="tach-fill" cx="60" cy="60" r="50" pathLength="100" strokeDasharray={`${(75 * rpm).toFixed(1)} 100`} />
+                </g>
+              </svg>
+              <span className="gear">{gear}</span>
+            </div>
             <strong>
-              {speed.toString().padStart(2, "0")}
+              {speed.toString().padStart(3, "0")}
               <small>KM/H</small>
             </strong>
-            <div>
-              {vehicle === "car" ? "GT / SPORTS CAR" : "RR / SUPERBIKE"}
+            <div className="nitro" aria-hidden="true">
+              <small>NITRO</small>
+              <i style={{ width: `${Math.round(nitro * 100)}%` }} />
             </div>
             <span>
               {game.snapshot.lapStart === null
@@ -459,7 +518,7 @@ export default function App() {
                 ["right", "→"],
                 ["reverse", "Reverse"],
                 ["brake", "Brake"],
-                ["boost", "Boost"],
+                ["boost", "Nitro"],
                 ["go", "Go ↑"],
               ].map(([action, label]) => (
                 <button
@@ -501,7 +560,7 @@ export default function App() {
             </div>
           )}
           <div className="desktop-drive-help">
-            <kbd>WASD</kbd> drive <kbd>SPACE</kbd> brake <kbd>SHIFT</kbd> boost
+            <kbd>WASD</kbd> drive <kbd>SPACE</kbd> brake / drift <kbd>SHIFT</kbd> nitro
           </div>
         </>
       )}
@@ -583,10 +642,50 @@ export default function App() {
                   aria-pressed={vehicle === v}
                   onClick={() => setVehicle(v)}
                 >
-                  {v === "car" ? "Sports car" : "Motorcycle"}
+                  {v === "car" ? "Street racer" : "Superbike"}
                 </button>
               ))}
             </fieldset>
+            <fieldset className="garage-picker">
+              <legend>Paint</legend>
+              {(Object.keys(paints) as Paint[]).map((k) => (
+                <button
+                  key={k}
+                  className="swatch"
+                  style={{ ["--swatch" as string]: paints[k].body, ["--swatch-accent" as string]: paints[k].accent }}
+                  aria-pressed={garage.paint === k}
+                  aria-label={paints[k].name}
+                  title={paints[k].name}
+                  onClick={() => setGarage((g) => ({ ...g, paint: k }))}
+                />
+              ))}
+            </fieldset>
+            <fieldset className="garage-picker">
+              <legend>Underglow</legend>
+              {(Object.keys(glows) as Glow[]).map((k) => (
+                <button
+                  key={k}
+                  className={"swatch" + (k === "off" ? " swatch-off" : " swatch-glow")}
+                  style={{ ["--swatch" as string]: glows[k].color || "transparent" }}
+                  aria-pressed={garage.glow === k}
+                  aria-label={`Underglow: ${glows[k].name}`}
+                  title={glows[k].name}
+                  onClick={() => setGarage((g) => ({ ...g, glow: k }))}
+                >
+                  {k === "off" ? "Off" : ""}
+                </button>
+              ))}
+            </fieldset>
+            <label className="setting-row">
+              <span>
+                Livery<small>Racing graphics on the bodywork</small>
+              </span>
+              <input
+                type="checkbox"
+                checked={garage.livery}
+                onChange={(e) => setGarage((g) => ({ ...g, livery: e.target.checked }))}
+              />
+            </label>
             <fieldset>
               <legend>Atmosphere</legend>
               {(["day", "sunset", "night"] as Mood[]).map((m) => (
@@ -625,9 +724,10 @@ export default function App() {
             </button>
             <h3>How to explore</h3>
             <p>
-              WASD or arrows: steer, accelerate and reverse. Space: brake and
-              drift. Shift: boost. E: visit a nearby destination. M: map. R:
-              respawn.
+              WASD or arrows: steer, accelerate and reverse. Space: brake;
+              hold it while steering to drift. Shift: nitro, which refills over
+              time and faster while you drift. E: visit a nearby destination.
+              M: map. R: respawn.
             </p>
             <p>
               Drive the track through all four checkpoints to complete a timed

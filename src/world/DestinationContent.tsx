@@ -52,20 +52,15 @@ export default function DestinationContent({ index }: { index: number }) {
       {index === 2 && (
         <div className="cinematic-projects">
           <p className="panel-lead">Ideas into products. Engineering into impact.</p>
-          {[
-            { title: "Fluxa", type: "AI WEBSITE LIFECYCLE", description: "A product initiative for website discovery, migration, validation and delivery.", stages: ["Discover", "Transform", "Validate", "Deliver"], status: "In development" },
-            { title: "Sitecraft", type: "ENTERPRISE CONTENT EXPERIENCE", description: "An enterprise CMS concept bringing content authoring, branching and human approval into one experience.", stages: ["Author", "Review", "Approve", "Release"], status: "In development" },
-            { title: "Tomorrow AI Land", type: "AI EDUCATION", description: "Hands-on AI learning through lessons, labs and real projects.", stages: ["Learn", "Build", "Test", "Share"], status: "Live learning site", url: "https://www.tomorrowailand.us/" },
-            { title: "AEM Modernization", type: "CLOUD PLATFORM ARCHITECTURE", description: "Enterprise-scale content architecture, cloud migrations, observability and reliable delivery.", stages: ["Architect", "Migrate", "Operate", "Improve"], status: "Professional experience" }
-          ].map((project, i) => (
+          {profile.products.map((project, i) => (
             <article className="cinematic-project" key={project.title}>
-              <div className="project-topline"><small>PROJECT {String(i + 1).padStart(2, "0")}</small><small>{project.type}</small></div>
+              <div className="project-topline"><small>PROJECT {String(i + 1).padStart(2, "0")}</small><small>{project.type.toUpperCase()}</small></div>
               <h3>{project.title}</h3>
-              <p>{project.description}</p>
+              <p>{project.body}</p>
               <div className="project-journey" aria-label={project.title + " process"}>
                 {project.stages.map((stage, j) => <span key={stage}><small>{String(j + 1).padStart(2, "0")}</small>{stage}</span>)}
               </div>
-              <div className="project-bottomline"><small>{project.status}</small>{"url" in project && project.url && <a href={project.url} target="_blank" rel="noopener noreferrer">Visit project ↗</a>}</div>
+              <div className="project-bottomline"><small>{project.status}</small>{project.url && <a href={project.url} target="_blank" rel="noopener noreferrer">Visit project ↗</a>}</div>
             </article>
           ))}
           <h3>Selected enterprise work</h3>
